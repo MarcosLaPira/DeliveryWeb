@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;  /* Desactivar desplazamiento horizontal si no es necesario */
+}
+
+.router-container {
+  height: 100%;  /* Asegura que el contenedor ocupe toda la pantalla */
+}

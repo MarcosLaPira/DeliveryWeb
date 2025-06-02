@@ -1,0 +1,106 @@
+<div class="w-full h-full flex p-1 relative overflow-hidden transition-all duration-300">
+
+  <!--filtros-->
+  <app-advanced-filters
+    [mostrar]="showFilters()"
+   (filtroAplicado)="onFiltroAplicado($event)"
+  >
+  </app-advanced-filters>
+
+  <!--Pantalla principal-->
+  <div class="flex-1 h-full w-full  flex-col  transition-all duration-300 ease-in-out ">
+
+    <!-- mostrador de cantidad de filas y filtros activos-->
+    <div class="flex items-center w-full mb-2  ">
+
+      <div class="flex flex-row text-center mr-4 w-1/8">
+        <button (click)="toggleFiltro()" class="text-xs font-bold text-gray-800 mr-3">
+           |||
+        </button>
+        <h2 class="text-xs font-bold text-gray-800">
+          Resultados: {{ piezasSignal().length }}
+        </h2>
+      </div>
+
+
+      <!-- mostramos los filtros qeu hay activos-->
+    <div class="flex flex-row items-center justify-end flex-wrap gap-2 mt-2 text-sm w-7/8 sticky">
+        <div class="flex gap-2 mt-2">
+
+          @for (filtro of getFiltrosActivosVisibles(); track filtro[0]) {
+
+            <span  class="px-2 py-1 bg-blue-200 text-blue-900 rounded  hover:cursor-pointer">
+              {{ filtro[0] }}: {{ filtro[1] }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- Tabla -->
+
+    <div class="flex-1 h-[calc(100vh-150px)] w-full overflow-y-scroll overflow-x-scroll ">
+      <app-tabla-piezas
+        [piezas]="piezasSignal()"
+        [filasPorPagina]="filasPorPaginaSignal()"
+        (piezaSeleccionada)="abrirModal($event)"
+      >
+      </app-tabla-piezas>
+
+    </div>
+
+    <!--Paginacion-->
+    <div class="flex items-center justify-between  text-sm">
+
+      <!-- Selector de cantidad -->
+      <div class="flex items-center gap-2">
+        <label for="pageSize">Mostrar:</label>
+        <select
+          id="pageSize"
+          class="border rounded px-2 py-1"
+        >
+          @for (tam of [10, 25, 50, 100]; track tam) {
+            <option [value]="tam" [selected]="pageSizeSignal() === tam">
+              {{ tam }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Navegación -->
+      <div class="flex items-center gap-2">
+
+        <button
+          class="px-2 py-1 border rounded"
+          (click)="cambiarPagina(currentPageSignal() - 1)"
+          [disabled]="currentPageSignal() === 1"
+        >
+          ← Anterior
+        </button>
+
+        <button
+          class="px-2 py-1 border rounded"
+          (click)="cambiarPagina(currentPageSignal() + 1)"
+          [disabled]="currentPageSignal() === totalPagesSignal()"
+        >
+          Siguiente →
+        </button>
+
+      </div>
+
+    </div>
+
+      @if (modalAbierto()) {
+        <app-modal-opciones
+          [modalAbierto]="modalAbierto()"
+          (cerrarModalEvent)="cerrarModal()"
+        ></app-modal-opciones>
+       }
+
+
+  </div>
+</div>

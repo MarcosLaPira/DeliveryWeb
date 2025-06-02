@@ -1,0 +1,41 @@
+<div>
+    <table class="w-full  ">
+        <thead class="sticky top-0 bg-gray-800 text-white">
+          <tr>
+            <th class="p-2 text-center">ID Pieza</th>
+            <th class="p-2 text-center">Administradora</th>
+            <th class="p-2 text-center">Permisionaria</th>
+            <th class="p-2 text-center">Estado</th>
+            <th class="p-2 text-center">Dni</th>
+            <th class="p-2 text-center">idcobis</th>
+            <th class="p-2 text-center">numero tarjeta</th>
+            <th class="p-2 text-center">Fecha proceso</th>
+            <th class="p-2 text-center">Fecha cambio estado</th>
+            <th class="p-2 text-center">Coordenadas</th>
+          </tr>
+        </thead>
+       <tbody>
+          @for (fila of  piezasPaginadas(); track fila.idPieza; let i = $index) {
+            <tr
+              class=" border-b hover:bg-amber-200 cursor-pointer text-center max-h-[48px] h-[48px] align-middle "
+              [class.bg-gray-400]="i % 2 === 0"
+               (click)="abrirModal(fila)"
+            >
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.idPieza }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.administradora }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.permisionaria }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.estado }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.dni }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.idcobis }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.numeroTarjeta }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.fechaProceso }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.fechaCambioEstado }}</td>
+              <td class="p-2 max-h-[48px] h-[48px] align-middle" >{{ fila.coordenadas }}</td>
+            </tr>
+          }
+
+
+
+        </tbody>
+      </table>
+</div>
