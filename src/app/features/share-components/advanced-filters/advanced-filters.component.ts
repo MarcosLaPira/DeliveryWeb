@@ -1,21 +1,28 @@
-import { Component, EventEmitter, input, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, input, Input, OnChanges, Output, signal } from '@angular/core';
 import { Filtro } from '../../../core/interfaces/Filtro';
 import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule} from '@angular/forms'
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-advanced-filters',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './advanced-filters.component.html',
   styleUrl: './advanced-filters.component.css'
 })
-export class AdvancedFiltersComponent {
+export class AdvancedFiltersComponent implements OnChanges {
+
 
   @Input() mostrar: boolean = false;
+  @Input() filtros: Filtro = {};
 
   @Output() filtroAplicado = new EventEmitter<Filtro>();
+  @Output() filtroEliminado = new EventEmitter<keyof Filtro>();
+  @Output() limpiarTodos = new EventEmitter<void>();
 
   filtrosForm: FormGroup;
   estadosDisponibles = ['Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado','Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado']; // ej.
+
+  expanded: { [key: string]: boolean } = {};
 
   constructor(private fb: FormBuilder) {
 
@@ -28,6 +35,25 @@ export class AdvancedFiltersComponent {
       fechaHasta: [''],
       estados: this.fb.array(this.estadosDisponibles.map(() => false)),
     });
+  }
+
+  ngOnChanges() {
+    if (this.filtrosForm && this.filtros) {
+      // Actualiza el formulario con los filtros activos
+      this.filtrosForm.patchValue({
+        dni: this.filtros.dni || '',
+        administradora: this.filtros.administradora || '',
+        permisionaria: this.filtros.permisionaria || '',
+        tarjeta: this.filtros.tarjeta || '',
+        fechaDesde: this.filtros.fechaDesde || '',
+        fechaHasta: this.filtros.fechaHasta || '',
+        estados: this.estadosDisponibles.map(e => this.filtros.estados?.includes(e) || false)
+      }, { emitEvent: false });
+    }
+  }
+
+  toggleExpand(key: string) {
+    this.expanded[key] = !this.expanded[key];
   }
 
   aplicarFiltros() {
@@ -46,6 +72,12 @@ export class AdvancedFiltersComponent {
     }
   }
 
+  resetFilters() {
+    this.filtrosForm.reset();
+    // Notifica al padre que todos los filtros fueron eliminados
+    this.limpiarTodos.emit();
+  }
+
     resetearFiltro(clave: keyof Filtro) {
     if (clave === 'estados') {
       const estadosArray = this.filtrosForm.get('estados') as FormArray;
@@ -53,6 +85,8 @@ export class AdvancedFiltersComponent {
     } else {
       this.filtrosForm.get(clave)?.setValue('');
     }
+    // Emitir evento para notificar al padre que el filtro fue eliminado
+    this.filtroEliminado.emit(clave);
   }
 
 

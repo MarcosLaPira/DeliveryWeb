@@ -11,45 +11,103 @@
 
           <!-- filtro.component.html -->
 
-   <div class=" flex flex-col h-full h-full p-4   ">
+    <div class=" flex flex-col h-full h-full p-4   ">
 
-      <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="flex flex-col h-full h-full rounded shadow">
-
-        <!-- Inputs de texto -->
-        <div class="flex flex-col space-y-5">
-          <input type="text" placeholder="DNI" formControlName="dni" class="w-full border p-2 rounded" />
-          <input type="text" placeholder="Administradora" formControlName="administradora" class="w-full border p-2 rounded" />
-          <input type="text" placeholder="Permisionaria" formControlName="permisionaria" class="w-full border p-2 rounded" />
-          <input type="text" placeholder="Tarjeta" formControlName="tarjeta" class="w-full border p-2 rounded" />
-          <input type="date" formControlName="fechaDesde" class="w-full border p-2 rounded" />
-          <input type="date" formControlName="fechaHasta" class="w-full border p-2 rounded" />
-
-        </div>
-
-        <!-- Checkboxes de estados -->
-        <div formArrayName="estados" class="border p-4 rounded bg-gray-50 mt-5">
-          <p class="font-semibold mb-2">Estados</p>
-          <div class=" g-2 max-h-40 overflow-y-auto">
-
-            @for (estado of estadosDisponibles; track $index) {
-              <label class="flex items-center space-x-2">
-                <input type="checkbox" [formControlName]="$index" class="accent-blue-600" />
-                <span>{{ estado }}</span>
-              </label>
-            }
-
+      <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="flex flex-col gap-4 bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-auto">
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('dni')">
+            DNI
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['dni']">▼</span>
           </div>
+          @if (expanded['dni']) {
+            <div class="filter-input mt-2">
+              <input type="text" placeholder="Ingrese DNI" formControlName="dni" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+          }
         </div>
-
-        <!-- Botón -->
-        <div class="mt-5 flex justify-end">
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Aplicar filtros
-          </button>
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('administradora')">
+            Administradora
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['administradora']">▼</span>
+          </div>
+          @if (expanded['administradora']) {
+            <div class="filter-input mt-2">
+              <input type="text" placeholder="Ingrese Administradora" formControlName="administradora" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+          }
+        </div>
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('permisionaria')">
+            Permisionaria
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['permisionaria']">▼</span>
+          </div>
+          @if (expanded['permisionaria']) {
+            <div class="filter-input mt-2">
+              <input type="text" placeholder="Ingrese Permisionaria" formControlName="permisionaria" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+          }
+        </div>
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('tarjeta')">
+            Tarjeta
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['tarjeta']">▼</span>
+          </div>
+          @if (expanded['tarjeta']) {
+            <div class="filter-input mt-2">
+              <input type="text" placeholder="Ingrese Tarjeta" formControlName="tarjeta" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+          }
+        </div>
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('fechaDesde')">
+            Fecha desde
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['fechaDesde']">▼</span>
+          </div>
+          @if (expanded['fechaDesde']) {
+            <div class="filter-input mt-2 flex gap-2">
+              <input type="date" formControlName="fechaDesde" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+             
+            </div>
+          }
+        </div>
+          <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('fechaHasta')">
+            Fecha hasta
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['fechaHasta']">▼</span>
+          </div>
+          @if (expanded['fechaHasta']) {
+            <div class="filter-input mt-2 flex gap-2">
+             
+              <input type="date" formControlName="fechaHasta" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+          }
+        </div>
+        <div class="filter-group">
+          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('estados')">
+            Estados
+            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['estados']">▼</span>
+          </div>
+          @if (expanded['estados']) {
+            <div class="filter-input mt-2">
+              <div formArrayName="estados" class="estados-list max-h-32 overflow-y-auto bg-gray-50 rounded p-2 border border-solid border-gray-300">
+                @for (estado of estadosDisponibles; track $index) {
+                  <label class="estado-item flex items-center gap-2 mb-1 text-sm">
+                    <input type="checkbox" [formControlName]="$index" class="accent-blue-600" />
+                    <span>{{ estado }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="flex gap-2 justify-end mt-4">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Aplicar filtros</button>
+          <button type="button" (click)="resetFilters()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Limpiar filtros</button>
         </div>
       </form>
 
     </div>
+
 
   </div>
 </div>

@@ -371,6 +371,11 @@ export class ConsultarPiezaComponent {
     this.onFiltroAplicado(this.filtrosActivos());
   }
 
+  onFiltroEliminado(key: string) {
+    // Elimina la referencia directa al hijo y solo actualiza el estado local de filtros
+    this.quitarFiltro(key as keyof Filtro);
+  }
+
   getFiltrosActivosVisibles = computed(() => {
 
     return Object.entries(this.filtrosActivos()).filter(([_, valor]) => {
@@ -415,19 +420,19 @@ export class ConsultarPiezaComponent {
   pageSizeSignal = signal(25);
   currentPageSignal = signal(1);
 
-  // Computed: total de páginas
-  totalPagesSignal = computed(() =>
-    Math.ceil(this.piezasSignal().length / this.pageSizeSignal())
-  );
-
   // Computed: piezas visibles
   piezasPaginadas = computed(() => {
     const todas = this.piezasSignal();
-    const pageSize = this.pageSizeSignal();
+    const pageSize = this.filasPorPaginaSignal();
     const page = this.currentPageSignal();
     const start = (page - 1) * pageSize;
     return todas.slice(start, start + pageSize);
   });
+
+  // Computed: total de páginas
+  totalPagesSignal = computed(() =>
+    Math.ceil(this.piezasSignal().length / this.filasPorPaginaSignal())
+  );
 
   // Métodos para actualizar los signals
   cambiarPagina(nueva: number) {
@@ -437,12 +442,15 @@ export class ConsultarPiezaComponent {
   }
 
   cambiarPageSize(nuevoTam: number) {
-    this.pageSizeSignal.set(nuevoTam);
+    this.filasPorPaginaSignal.set(nuevoTam);
     this.currentPageSignal.set(1); // resetea la página
   }
 
   filasPorPaginaSignal = signal(10); // o lo que el usuario elija
 
-
+  onLimpiarTodos() {
+    // Limpia todos los filtros activos en el padre
+    this.filtrosActivos.set({});
+  }
 
 }

@@ -1,1 +1,96 @@
-<p>cambiar-estado works!</p>
+<div class="w-full h-full flex p-1 relative overflow-hidden transition-all duration-300">
+  <!-- Filtros -->
+  <app-advanced-filters
+    [mostrar]="showFilters()"
+    [filtros]="filtrosActivos()"
+    (filtroAplicado)="onFiltroAplicado($event)"
+    (filtroEliminado)="onFiltroEliminado($event)"
+    (limpiarTodos)="onLimpiarTodos()"
+  ></app-advanced-filters>
+
+  <!-- Pantalla principal -->
+  <div class="flex-1 h-full w-full flex-col transition-all duration-300 ease-in-out ">
+    <!-- Mostrador de cantidad de filas y filtros activos -->
+    <div class="flex items-center w-full mb-2">
+
+      <div class="flex flex-row text-center mr-4 w-1/8">
+        <button (click)="toggleFiltro()" class="text-xs font-bold text-gray-800 mr-3">|||</button>
+        <h2 class="text-xs font-bold text-gray-800">Resultados: {{ piezasSignal().length }}</h2>
+      </div>
+      <!-- Etiquetas de filtros activos -->
+      <div class="flex flex-row items-center justify-end flex-wrap gap-2 mt-2 text-sm w-7/8 sticky">
+        <div class="flex gap-2 mt-2">
+          @for (filtro of getFiltrosActivosVisibles(); track filtro[0]) {
+            <span class="px-2 py-1 bg-blue-200 text-blue-900 rounded hover:cursor-pointer hover:bg-blue-400 transition">
+              {{ filtro[0] }}: {{ filtro[1] }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- Tabla -->
+    <div class="flex-1 h-[calc(100vh-180px)] w-full overflow-y-scroll overflow-x-scroll ">
+      <table class="w-full">
+        <thead class="sticky top-0 bg-gray-800 text-white">
+          <tr>
+            <th class="p-2 text-center">ID Pieza</th>
+            <th class="p-2 text-center">Administradora</th>
+            <th class="p-2 text-center">Permisionaria</th>
+            <th class="p-2 text-center">Estado</th>
+            <th class="p-2 text-center">DNI</th>
+            <th class="p-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pieza of piezasPaginadas(); track pieza.idPieza) {
+            <tr class="border-b hover:bg-amber-200 cursor-pointer text-center">
+              <td class="p-2">{{ pieza.idPieza }}</td>
+              <td class="p-2">{{ pieza.administradora }}</td>
+              <td class="p-2">{{ pieza.permisionaria }}</td>
+              <td class="p-2">{{ pieza.estado }}</td>
+              <td class="p-2">{{ pieza.dni }}</td>
+              <td class="p-2">
+                <button class="bg-primary text-white px-2 py-1 rounded" (click)="abrirCambioEstado(pieza)">Cambiar estado</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <!-- Paginación -->
+    <div class="flex items-center justify-between text-sm mt-2">
+      <div class="flex items-center gap-2">
+        <label for="pageSize">Mostrar:</label>
+        <select id="pageSize" class="border rounded px-2 py-1" [value]="filasPorPaginaSignal()" (change)="cambiarPageSize($any($event.target).value * 1)">
+          @for (tam of [10, 25, 50, 100]; track tam) {
+            <option [value]="tam" [selected]="filasPorPaginaSignal() === tam">{{ tam }}</option>
+          }
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-2 py-1 border rounded" (click)="cambiarPagina(currentPageSignal() - 1)" [disabled]="currentPageSignal() === 1">← Anterior</button>
+        <button class="px-2 py-1 border rounded" (click)="cambiarPagina(currentPageSignal() + 1)" [disabled]="currentPageSignal() === totalPagesSignal()">Siguiente →</button>
+      </div>
+    </div>
+    <!-- Modal de cambio de estado -->
+    @if (piezaSeleccionada()) {
+      <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+          <h2 class="font-bold mb-2 text-lg">Cambiar estado de la pieza {{ piezaSeleccionada()?.idPieza }}</h2>
+          <select class="border p-2 rounded w-full mb-4" [value]="nuevoEstado" (change)="nuevoEstado = $any($event.target).value">
+            @for (estado of estadosDisponibles; track estado) {
+              <option [value]="estado">{{ estado }}</option>
+            }
+          </select>
+          <div class="flex gap-2 justify-end">
+            <button class="bg-primary text-white px-4 py-2 rounded" (click)="confirmarCambioEstado()">Confirmar</button>
+            <button class="bg-gray-300 px-4 py-2 rounded" (click)="cancelarCambioEstado()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

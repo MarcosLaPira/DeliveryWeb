@@ -3,7 +3,10 @@
   <!--filtros-->
   <app-advanced-filters
     [mostrar]="showFilters()"
-   (filtroAplicado)="onFiltroAplicado($event)"
+    [filtros]="filtrosActivos()"
+    (filtroAplicado)="onFiltroAplicado($event)"
+    (filtroEliminado)="onFiltroEliminado($event)"
+    (limpiarTodos)="onLimpiarTodos()"
   >
   </app-advanced-filters>
 
@@ -26,10 +29,9 @@
       <!-- mostramos los filtros qeu hay activos-->
     <div class="flex flex-row items-center justify-end flex-wrap gap-2 mt-2 text-sm w-7/8 sticky">
         <div class="flex gap-2 mt-2">
-
           @for (filtro of getFiltrosActivosVisibles(); track filtro[0]) {
-
-            <span  class="px-2 py-1 bg-blue-200 text-blue-900 rounded  hover:cursor-pointer">
+            <span  class="px-2 py-1 bg-blue-200 text-blue-900 rounded hover:cursor-pointer hover:bg-blue-400 transition"
+                  (click)="onFiltroEliminado(filtro[0])">
               {{ filtro[0] }}: {{ filtro[1] }}
             </span>
           }
@@ -45,8 +47,8 @@
 
     <div class="flex-1 h-[calc(100vh-150px)] w-full overflow-y-scroll overflow-x-scroll ">
       <app-tabla-piezas
-        [piezas]="piezasSignal()"
-        [filasPorPagina]="filasPorPaginaSignal()"
+        [piezas]="piezasPaginadas()"
+       
         (piezaSeleccionada)="abrirModal($event)"
       >
       </app-tabla-piezas>
@@ -62,9 +64,11 @@
         <select
           id="pageSize"
           class="border rounded px-2 py-1"
+          [value]="filasPorPaginaSignal()"
+          (change)="cambiarPageSize($any($event.target).value * 1)"
         >
           @for (tam of [10, 25, 50, 100]; track tam) {
-            <option [value]="tam" [selected]="pageSizeSignal() === tam">
+            <option [value]="tam" [selected]="filasPorPaginaSignal() === tam">
               {{ tam }}
             </option>
           }

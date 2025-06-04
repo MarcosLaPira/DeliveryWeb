@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Pieza } from '../../../core/interfaces/Pieza';
 
 @Component({
@@ -10,13 +10,6 @@ import { Pieza } from '../../../core/interfaces/Pieza';
 export class TablaPiezasComponent {
 
   @Input() piezas: Pieza[] = [];
-  @Input() filasPorPagina = 10;
-  currentPage = signal(1);
-
-  piezasPaginadas = computed(() => {
-  const start = (this.currentPage() - 1) * this.filasPorPagina;
-  return this.piezas.slice(start, start + this.filasPorPagina);
-});
 
   @Output() piezaSeleccionada = new EventEmitter<Pieza>();
 
