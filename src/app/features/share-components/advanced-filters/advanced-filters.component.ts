@@ -1,6 +1,6 @@
-import { Component, EventEmitter, input, Input, OnChanges, Output, signal } from '@angular/core';
+import { Component, input, Input, OnChanges, output, Signal, signal } from '@angular/core';
 import { Filtro } from '../../../core/interfaces/Filtro';
-import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule} from '@angular/forms'
+import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule, Validators} from '@angular/forms'
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,32 +14,43 @@ export class AdvancedFiltersComponent implements OnChanges {
 
   @Input() mostrar: boolean = false;
   @Input() filtros: Filtro = {};
+  
+  filtroAplicado = output<Filtro>();
+  filtroEliminado = output<keyof Filtro>();
+  limpiarTodos = output<void>();
 
-  @Output() filtroAplicado = new EventEmitter<Filtro>();
-  @Output() filtroEliminado = new EventEmitter<keyof Filtro>();
-  @Output() limpiarTodos = new EventEmitter<void>();
+  filtroAplicadoSignal = signal<Filtro | null>(null);
+  filtroEliminadoSignal = signal<keyof Filtro | null>(null);
+  limpiarTodosSignal = signal<boolean>(false);
 
   filtrosForm: FormGroup;
   estadosDisponibles = ['Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado','Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado']; // ej.
 
   expanded: { [key: string]: boolean } = {};
 
+  // Inicializa el formulario con los controles necesarios
   constructor(private fb: FormBuilder) {
-
     this.filtrosForm = this.fb.group({
-      dni: [''],
+      dni: ['', [Validators.pattern('^[0-9]*$')]],
       administradora: [''],
       permisionaria: [''],
       tarjeta: [''],
       fechaDesde: [''],
       fechaHasta: [''],
+      // Crea un FormArray para los estados, inicializado con los estados disponibles
+      // Cada estado es un FormControl que puede ser true o false
       estados: this.fb.array(this.estadosDisponibles.map(() => false)),
     });
+
   }
 
+  // Detecta cambios en los inputs y actualiza el formulario
+  // ngOnChanges se llama cuando los inputs cambian, ideal para sincronizar el formulario con los filtros
   ngOnChanges() {
+
     if (this.filtrosForm && this.filtros) {
-      // Actualiza el formulario con los filtros activos
+      
+      // Actualiza los valores del formulario con los filtros proporcionados
       this.filtrosForm.patchValue({
         dni: this.filtros.dni || '',
         administradora: this.filtros.administradora || '',
@@ -49,15 +60,21 @@ export class AdvancedFiltersComponent implements OnChanges {
         fechaHasta: this.filtros.fechaHasta || '',
         estados: this.estadosDisponibles.map(e => this.filtros.estados?.includes(e) || false)
       }, { emitEvent: false });
+
+
     }
+
   }
 
   toggleExpand(key: string) {
     this.expanded[key] = !this.expanded[key];
   }
 
+  // Método para aplicar los filtros y emitir el evento con los datos del formulario
   aplicarFiltros() {
+
     if (this.filtrosForm.valid) {
+
       const formValue = this.filtrosForm.value;
       const filtros: Filtro = {
         dni: formValue.dni,
@@ -69,23 +86,24 @@ export class AdvancedFiltersComponent implements OnChanges {
         estados: this.estadosDisponibles.filter((_, i) => formValue.estados[i])
       };
       this.filtroAplicado.emit(filtros);
+
     }
+
   }
 
+  // Método para resetear todos los filtros
   resetFilters() {
     this.filtrosForm.reset();
-    // Notifica al padre que todos los filtros fueron eliminados
     this.limpiarTodos.emit();
   }
 
-    resetearFiltro(clave: keyof Filtro) {
+  resetearFiltro(clave: keyof Filtro) {
     if (clave === 'estados') {
       const estadosArray = this.filtrosForm.get('estados') as FormArray;
       estadosArray.controls.forEach(control => control.setValue(false));
     } else {
       this.filtrosForm.get(clave)?.setValue('');
     }
-    // Emitir evento para notificar al padre que el filtro fue eliminado
     this.filtroEliminado.emit(clave);
   }
 

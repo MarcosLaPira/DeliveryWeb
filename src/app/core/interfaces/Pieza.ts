@@ -1,4 +1,5 @@
 export interface Pieza {
+  isSelected?: boolean; // Para selección masiva
   idPieza: string;
   administradora: string;
   permisionaria: string;

@@ -1,0 +1,15 @@
+.fixed {
+  position: fixed;
+}
+.bg-opacity-30 {
+  background-color: rgba(0,0,0,0.3);
+}
+.min-w-320px {
+  min-width: 320px;
+}
+.rounded-lg {
+  border-radius: 0.75rem;
+}
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}

@@ -1,101 +1,130 @@
-<div class="w-full h-full flex p-1 relative overflow-hidden transition-all duration-300">
+<div class="w-full h-full flex  overflow-hidden transition-all duration-300 bg-background">
 
-  <!--filtros-->
+  <!--Filtros le paso las senales y guardo referencia -->
   <app-advanced-filters
-    [mostrar]="showFilters()"
+    class="h-full "
+    [mostrar]="showFilters()" 
     [filtros]="filtrosActivos()"
-    (filtroAplicado)="onFiltroAplicado($event)"
-    (filtroEliminado)="onFiltroEliminado($event)"
-    (limpiarTodos)="onLimpiarTodos()"
+    #filtrosComponent
   >
   </app-advanced-filters>
 
   <!--Pantalla principal-->
-  <div class="flex-1 h-full w-full  flex-col  transition-all duration-300 ease-in-out ">
+  <div class="flex-1 h-full w-full  flex-col  transition-all duration-300 ease-in-out bg-background  ">
 
     <!-- mostrador de cantidad de filas y filtros activos-->
-    <div class="flex items-center w-full mb-2  ">
+    <div class="flex flex-row items-center justify-center w-full mt-2">
+      <div class="flex flex-row items-center justify-between w-full max-w-7xl min-w-[700px]">
+        <div class="flex flex-row text-center mr-4 w-1/8">
+          <button (click)="toggleFiltro()" class="text-xs font-bold text-secondary mr-3 ">
+             |||
+          </button>
+          <h2 class="text-xs font-bold text-gray-800">
+            Resultados: {{ piezasSignal().length }}
+          </h2>
+        </div>
 
-      <div class="flex flex-row text-center mr-4 w-1/8">
-        <button (click)="toggleFiltro()" class="text-xs font-bold text-gray-800 mr-3">
-           |||
-        </button>
-        <h2 class="text-xs font-bold text-gray-800">
-          Resultados: {{ piezasSignal().length }}
-        </h2>
-      </div>
 
+        
+        <!-- mostramos los filtros que hay activos-->
+        <div class="flex flex-row items-center justify-end flex-wrap gap-2 text-sm w-7/8 max-h-[32px] overflow-y-auto">
+          <div class="flex gap-2 mt-2">
+            
+            @for (filtro of getFiltrosActivosVisibles(); track filtro[0]) {
 
-      <!-- mostramos los filtros qeu hay activos-->
-    <div class="flex flex-row items-center justify-end flex-wrap gap-2 mt-2 text-sm w-7/8 sticky">
-        <div class="flex gap-2 mt-2">
-          @for (filtro of getFiltrosActivosVisibles(); track filtro[0]) {
-            <span  class="px-2 py-1 bg-blue-200 text-blue-900 rounded hover:cursor-pointer hover:bg-blue-400 transition"
-                  (click)="onFiltroEliminado(filtro[0])">
-              {{ filtro[0] }}: {{ filtro[1] }}
-            </span>
-          }
+              <span class="px-2 py-1 bg-blue-200 text-blue-900 rounded hover:cursor-pointer hover:bg-blue-400 transition"
+                    (click)="onFiltroEliminado(filtro[0])">
+                {{ filtro[0] }}: {{ filtro[1] }}
+              </span>
+
+            }
+
+          </div>
         </div>
       </div>
     </div>
 
-
-
-
-
     <!-- Tabla -->
+    <div class="flex justify-center align-center w-full mt-1">
+      <div class="w-full max-w-7xl min-w-[700px] max-h-[500px] min-h-[500px] overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white  ">
+        
+        <app-tabla-piezas
+          class="w-full"
+          [piezas]="piezasPaginadas"       
+          #tablaPiezas
+        >
+        </app-tabla-piezas>
 
-    <div class="flex-1 h-[calc(100vh-150px)] w-full overflow-y-scroll overflow-x-scroll ">
-      <app-tabla-piezas
-        [piezas]="piezasPaginadas()"
-       
-        (piezaSeleccionada)="abrirModal($event)"
-      >
-      </app-tabla-piezas>
-
+      </div>
     </div>
 
     <!--Paginacion-->
-    <div class="flex items-center justify-between  text-sm">
+    <div class="flex items-center justify-center w-full mt-2 h-20">
+      <div class="w-full max-w-7xl flex items-center justify-between text-sm">
+        <!-- Selector de cantidad -->
+        <div class="flex items-center gap-2">
 
-      <!-- Selector de cantidad -->
-      <div class="flex items-center gap-2">
-        <label for="pageSize">Mostrar:</label>
-        <select
-          id="pageSize"
-          class="border rounded px-2 py-1"
-          [value]="filasPorPaginaSignal()"
-          (change)="cambiarPageSize($any($event.target).value * 1)"
-        >
-          @for (tam of [10, 25, 50, 100]; track tam) {
-            <option [value]="tam" [selected]="filasPorPaginaSignal() === tam">
-              {{ tam }}
-            </option>
-          }
-        </select>
+          <label for="pageSize">Mostrar:</label>
+
+          <select
+            id="pageSize"
+            class="border rounded px-2 py-1"
+            [value]="filasPorPaginaSignal()"
+            (change)="cambiarPageSize($any($event.target).value * 1)"
+          >
+          <!-- Opciones de tamaño de página se da una variable que contiene los tamaños disponibles -->
+            @for (tam of [10, 25, 50, 100]; track tam) {
+
+              <option [value]="tam" [selected]="filasPorPaginaSignal() === tam">
+                {{ tam }}
+              </option>
+
+            }
+
+          </select>
+        </div>
+
+        <!-- Iconos de acciones masivas -->
+        <div class="flex items-center gap-4 ml-4">
+
+         
+          <button class="group" title="Ver en mapas" (click)="emitirSeleccionMasivaDesdePadreAlMapa()">
+            <img src="/planeta-tierra.png" alt="Ver en mapas" class="h-6 w-6 object-contain group-hover:scale-110 transition" />
+          </button>
+
+          <button class="group" title="Cambiar estado" (click)="emitirCambioDeEstado()" >
+            <img src="/flechas.png" alt="Cambiar estado" class="h-6 w-6 object-contain group-hover:scale-110 transition" />
+          </button>
+          
+          <!-- Botón de Andreani -->
+          <button class="group" title="Consultar en Andreani" (click)="emitirSeleccionMasivaDesdePadre()">
+            <img src="https://a.storyblok.com/f/63950/x/3a5005450d/isologo-vector.svg" alt="Andreani" class="h-20 w-20 object-contain group-hover:scale-110 transition" />
+          </button>
+           
+          <button class="group" title="Exportar a Excel">
+            <img src="/descargar.png" alt="Exportar a Excel" class="h-6 w-6 object-contain group-hover:scale-110 transition" />
+          </button>
+        
+        </div>
+
+        <!-- Navegación -->
+        <div class="flex items-center gap-2">
+          <button
+            class="px-2 py-1 border rounded hover:bg-gradient-to-br from-primary to-blue-100"
+            (click)="cambiarPagina(currentPageSignal() - 1)"
+            [disabled]="currentPageSignal() === 1"
+          >
+            ← Anterior
+          </button>
+          <button
+            class="px-2 py-1 border rounded hover:bg-gradient-to-br from-primary to-blue-100"
+            (click)="cambiarPagina(currentPageSignal() + 1)"
+            [disabled]="currentPageSignal() === totalPagesSignal()"
+          >
+            Siguiente →
+          </button>
+        </div>
       </div>
-
-      <!-- Navegación -->
-      <div class="flex items-center gap-2">
-
-        <button
-          class="px-2 py-1 border rounded"
-          (click)="cambiarPagina(currentPageSignal() - 1)"
-          [disabled]="currentPageSignal() === 1"
-        >
-          ← Anterior
-        </button>
-
-        <button
-          class="px-2 py-1 border rounded"
-          (click)="cambiarPagina(currentPageSignal() + 1)"
-          [disabled]="currentPageSignal() === totalPagesSignal()"
-        >
-          Siguiente →
-        </button>
-
-      </div>
-
     </div>
 
       @if (modalAbierto()) {

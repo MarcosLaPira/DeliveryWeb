@@ -1,52 +1,43 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, Signal } from '@angular/core';
 import { Filtro } from '../../../core/interfaces/Filtro';
 import { Pieza } from '../../../core/interfaces/Pieza';
 import { AdvancedFiltersComponent } from "../../../features/share-components/advanced-filters/advanced-filters.component";
+import { TablaPiezasComponent } from "../../../features/share-components/tabla-piezas/tabla-piezas.component";
+import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 
 @Component({
   selector: 'app-cambiar-estado',
   templateUrl: './cambiar-estado.component.html',
   styleUrl: './cambiar-estado.component.css',
-  imports: [AdvancedFiltersComponent]
+  imports: [AdvancedFiltersComponent, TablaPiezasComponent]
 })
 export class CambiarEstadoComponent {
   // Datos de ejemplo (puedes reemplazar por fetch real)
-  piezasSignal = signal<Pieza[]>([
-    { idPieza: '00001', administradora: 'Admin 1', permisionaria: 'Permi 1', estado: 'Pendiente', dni: '12345678', idcobis: 'CB001', numeroTarjeta: '4111111111111111', fechaProceso: '2025-04-10', fechaCambioEstado: '2025-04-11', coordenadas: '-34.6037,-58.3816' },
-    { idPieza: '00002', administradora: 'Admin 2', permisionaria: 'Permi 2', estado: 'En tránsito', dni: '87654321', idcobis: 'CB002', numeroTarjeta: '4222222222222222', fechaProceso: '2025-04-09', fechaCambioEstado: '2025-04-10', coordenadas: '-34.6158,-58.4333' },
-    { idPieza: '00003', administradora: 'Admin 3', permisionaria: 'Permi 3', estado: 'Entregado', dni: '11223344', idcobis: 'CB003', numeroTarjeta: '4333333333333333', fechaProceso: '2025-04-08', fechaCambioEstado: '2025-04-09', coordenadas: '-34.6025,-58.4483' },
-  ]);
-
+  
+  
   showFilters = signal(false);
   filtrosActivos = signal<Filtro>({});
 
   filasPorPaginaSignal = signal(10);
   currentPageSignal = signal(1);
 
-  piezasPaginadas = computed(() => {
-    const todas = this.piezasSignal();
-    const pageSize = this.filasPorPaginaSignal();
-    const page = this.currentPageSignal();
-    const start = (page - 1) * pageSize;
-    return todas.slice(start, start + pageSize);
-  });
-
-  totalPagesSignal = computed(() =>
-    Math.ceil(this.piezasSignal().length / this.filasPorPaginaSignal())
-  );
-
-  // Etiquetas de filtros activos
-  getFiltrosActivosVisibles = computed(() => {
-    return Object.entries(this.filtrosActivos()).filter(([_, valor]) => {
-      if (Array.isArray(valor)) return valor.length > 0;
-      return valor !== null && valor !== undefined && valor !== '';
-    });
-  });
-
+  piezasSeleccionadasSignal: Signal<Pieza[]>;
+  
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
+
+  estados = signal<string[]>([
+    'Pendiente', 'En tránsito', 'Entregado', 'Devuelto', 'En custodia', 'En correo', 'En banco'
+  ]);
+
+
+  constructor(private piezasSeleccionadasService: PiezasSeleccionadasService) {
+      this.piezasSeleccionadasSignal = this.piezasSeleccionadasService.getPiezasSeleccionadas();
+
+      console.log('Piezas seleccionadas:', this.piezasSeleccionadasSignal());
+  }
+
   nuevoEstado = '';
-  estadosDisponibles = ['Pendiente', 'En tránsito', 'Entregado', 'Devuelto', 'En custodia', 'En correo', 'En banco'];
 
   toggleFiltro() {
     this.showFilters.update(v => !v);
@@ -97,10 +88,10 @@ export class CambiarEstadoComponent {
     const pieza = this.piezaSeleccionada();
     if (pieza) {
       // Actualiza el estado en el array de piezas
-      const piezas = this.piezasSignal().map(p =>
+      const piezas = this.piezasSeleccionadasSignal().map(p =>
         p.idPieza === pieza.idPieza ? { ...p, estado: this.nuevoEstado } : p
       );
-      this.piezasSignal.set(piezas);
+      //this.piezasSeleccionadasSignal.set(piezas);
       this.piezaSeleccionada.set(null);
     }
   }
@@ -108,4 +99,27 @@ export class CambiarEstadoComponent {
   cancelarCambioEstado() {
     this.piezaSeleccionada.set(null);
   }
+
+
+   piezasPaginadas = computed(() => {
+    const todas = this.piezasSeleccionadasSignal();
+    const pageSize = this.filasPorPaginaSignal();
+    const page = this.currentPageSignal();
+    const start = (page - 1) * pageSize;
+    return todas.slice(start, start + pageSize);
+  });
+
+  totalPagesSignal = computed(() =>
+    Math.ceil(this.piezasSeleccionadasSignal().length / this.filasPorPaginaSignal())
+  );
+
+  // Etiquetas de filtros activos
+  getFiltrosActivosVisibles = computed(() => {
+    return Object.entries(this.filtrosActivos()).filter(([_, valor]) => {
+      if (Array.isArray(valor)) return valor.length > 0;
+      return valor !== null && valor !== undefined && valor !== '';
+    });
+  });
+
+
 }

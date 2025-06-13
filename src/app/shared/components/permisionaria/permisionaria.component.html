@@ -1,13 +1,68 @@
-<div class="w-full h-screen  bg-amber-300">
+<div class="w-full h-screen bg-background p-6">
+  <div class="mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+    <h2 class="text-xl font-bold text-blue-900">Estados de Tarjetas interno vs permisionaria</h2>
+    <div class="flex flex-wrap gap-2 items-center">
 
-  <div>
-    <p>numero de pieza</p>
-    <p>estado actual</p>
-    <p>estados por los que paso</p>
+      <label class="text-sm text-gray-700">Empresa:</label>
+      <select class="border rounded px-2 py-1" (change)="onEmpresaChange($event)">
+        <option value="">Todas</option>
+        @for (empresa of empresasDisponibles(); track empresa) {
+          <option [value]="empresa">{{ empresa }}</option>
+        }
+      </select>
+
+      <label class="text-sm text-gray-700 ml-2">Estado Interno:</label>
+      <select class="border rounded px-2 py-1" (change)="onEstadoInternoChange($event)">
+        <option value="">Todos</option>
+        @for (estado of estadosInternosDisponibles(); track estado) {
+          <option [value]="estado">{{ estado }}</option>
+        }
+      </select>
+      <label class="text-sm text-gray-700 ml-2">Estado Andreani:</label>
+      <select class="border rounded px-2 py-1" (change)="onEstadoAndreaniChange($event)">
+        <option value="">Todos</option>
+        @for (estado of estadosAndreaniDisponibles(); track estado) {
+          <option [value]="estado">{{ estado }}</option>
+        }
+      </select>
+    </div>
   </div>
 
+  <div class="overflow-x-auto overflow-y-auto max-h-[500px] rounded-xl shadow-xl bg-white">
+    <table class="min-w-full text-sm text-center border-separate border-spacing-y-1">
+      <thead class="sticky top-0 z-10 bg-gradient-to-r from-blue-200 to-blue-100">
+        <tr>
+          <th class="px-4 py-2 font-semibold text-blue-900">ID</th>
+          <th class="px-4 py-2 font-semibold text-blue-900">Empresa</th>
+          <th class="px-4 py-2 font-semibold text-blue-900">Estado Interno</th>
+          <th class="px-4 py-2 font-semibold text-blue-900">Estado Andreani</th>
+          <th class="px-4 py-2 font-semibold text-blue-900">Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tarjeta of tarjetasFiltradas(); track tarjeta.id) {
+          <tr class="hover:bg-blue-100 hover:text-blue-900 transition border-b border-gray-100 cursor-pointer" 
+            (click)="abrirModalAndreani(tarjeta)">
+            <td class="px-4 py-2">{{ tarjeta.id }}</td>
+            <td class="px-4 py-2">Andreani</td>
+            <td class="px-4 py-2">{{ tarjeta.estadoInterno }}</td>
+            <td class="px-4 py-2">{{ tarjeta.estadoAndreani }}</td>
+            <td class="px-4 py-2">{{ tarjeta.fecha }}</td>
+          </tr>
+        }
+        @if (tarjetasFiltradas().length === 0) {
+          <tr>
+            <td colspan="5" class="text-center text-gray-400 py-6">No se encontraron resultados.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
-  <button>buscar pieza</button>
-
+  <app-modal-andreani
+    [open]="modalAndreaniAbierto()"
+    [estados]="estadosAndreaniSeleccionados"
+    (close)="cerrarModalAndreani()"
+  ></app-modal-andreani>
 </div>
 
