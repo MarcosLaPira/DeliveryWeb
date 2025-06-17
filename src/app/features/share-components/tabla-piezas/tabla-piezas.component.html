@@ -1,47 +1,63 @@
 <div >
+  
+  
     <table class="w-full h-full ">
-        <thead class="bg-gradient-to-r from-primary to-blue-300 sticky top-0 z-10  text-white text-xs uppercase tracking-wider shadow-md ">
-          <tr>
-            <th class="p-2 text-center font-extrabold">
-              <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll($event)" />
-            </th>
-            <th class="p-2 text-center font-extrabold rounded-tl-lg drop-shadow-md">ID Pieza</th>
-            <th class="p-2 text-center font-extrabold">Administradora</th>
-            <th class="p-2 text-center font-extrabold">Permisionaria</th>
-            <th class="p-2 text-center font-extrabold">Estado</th>
-            <th class="p-2 text-center font-extrabold">DNI</th>
-            <th class="p-2 text-center font-extrabold">ID Cobis</th>
-            <th class="p-2 text-center font-extrabold">N° Tarjeta</th>
-            <th class="p-2 text-center font-extrabold">F. Proceso</th>
-            <th class="p-2 text-center font-extrabold">F. Cambio</th>
-            <th class="p-2 text-center font-extrabold rounded-tr-lg">Coordenadas</th>
-          </tr>
-        </thead>
-       <tbody>
-          @for (fila of piezas(); track fila.idPieza; let i = $index) {
-            <tr
-              class="border-b bg-surface cursor-pointer text-center max-h-[20px] h-[20px] align-middle hover:bg-blue-100 hover:text-blue-900 transition-all duration-150"
-              [class.bg-gray-100]="i % 2 === 0" 
-               (click)="abrirModal(fila)"
+      <thead class="bg-gradient-to-r from-primary to-blue-300 sticky top-0 z-10  text-white text-xs uppercase tracking-wider shadow-md ">
+        <tr>
+          <th class="p-2 text-center font-extrabold">
+            <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll($event)" />
+          </th>
+          <th class="p-2 text-center font-extrabold rounded-tl-lg drop-shadow-md">ID Pieza</th>
+          <th class="p-2 text-center font-extrabold">Administradora</th>
+          <th class="p-2 text-center font-extrabold">N.Permisionaria</th>
+          <th class="p-2 text-center font-extrabold">Tipo producto</th>
+          <th class="p-2 text-center font-extrabold">Permisionaria</th>
+          <th class="p-2 text-center font-extrabold">Nombre Embozado</th>
+          <th class="p-2 text-center font-extrabold">Estado</th>
+          <th class="p-2 text-center font-extrabold">DNI</th>
+          <th class="p-2 text-center font-extrabold">ID Cobis</th>
+          <th class="p-2 text-center font-extrabold">N° Tarjeta</th>
+          <th class="p-2 text-center font-extrabold">Sucursal</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        @if(cargando())
+          {
+            <div class="loader w-full h-full justify-center text-center">Cargando...</div>
+          }
+        @else {
+          @for (fila of piezas(); track fila.IDPieza; let i = $index) {
+           <tr
+              class="border-b cursor-pointer text-center align-middle hover:bg-gray-200 hover:text-blue-700 transition-all duration-150"
+              [class.bg-white]="i % 2 === 0"
+              [class.bg-blue-100]="i % 2 !== 0"
+              (click)="onRowClick(fila)"
             >
-              <td class="p-2 max-h-[20px] h-[20px] align-middle">
+              <td class="p-2 align-middle" style="width: 40px; height: 35px;">
                 <input type="checkbox" [checked]="isSelected(fila)" (change)="toggleSeleccion(fila, $event)" (click)="$event.stopPropagation()" />
               </td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.idPieza }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.administradora }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.permisionaria }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.estado }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.dni }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.idcobis }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.numeroTarjeta }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.fechaProceso }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.fechaCambioEstado }}</td>
-              <td class="p-2 max-h-[20px] h-[20px] align-middle" >{{ fila.coordenadas }}</td>
+              <td class="p-2 align-middle" style="width: 80px; height: 35px;">{{ fila.IDPieza }}</td>
+              <td class="p-2 align-middle" style="width: 100px; height: 35px;">{{ fila.Secuencia }}</td>
+              <td class="p-2 align-middle" style="min-width: 130px; max-width: 130px; height: 35px;">{{ fila.SecPermisionaria }}</td>
+              <td class="p-2 align-middle" style="min-width: 150px; max-width: 320px; height: 35px;">{{ fila.TipoProducto }}</td>
+              <td class="p-2 align-middle" style="width: 120px; height: 35px;">{{ fila.permisionaria }}</td>
+              <td class="p-2 align-middle" style="min-width: 300px; max-width: 320px; height: 35px;  ">
+                {{ fila.NombreEmbozadoTarjeta }}
+              </td>
+              <td class="p-2 align-middle" style="min-width: 200px;  max-width: 320px; height: 35px;">{{ fila.Estado }}</td>
+              <td class="p-2 align-middle" style="width: 100px; height: 35px;">{{fila.NumeroDocumento}}</td>
+              <td class="p-2 align-middle" style="width: 100px; height: 35px;">{{ fila.NumeroCliente }}</td>
+              <td class="p-2 align-middle" style="width: 130px; height: 35px;">{{ fila.Nro }}</td>
+              <td class="p-2 align-middle" style="min-width: 230px; max-width: 320px; height: 35px;">{{ fila.Sucursal }}</td>
+           
             </tr>
           }
+        }
 
 
+      </tbody>
+    </table>
 
-        </tbody>
-      </table>
+    
 </div>

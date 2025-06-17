@@ -1,5 +1,6 @@
 import { Component, Input, Output, Signal, output } from '@angular/core';
-import { Pieza } from '../../../core/interfaces/Pieza';
+import { Pieza } from '../../../core/interfaces/modelos/Pieza';
+
 
 @Component({
   selector: 'app-tabla-piezas',
@@ -9,18 +10,21 @@ import { Pieza } from '../../../core/interfaces/Pieza';
 })
 export class TablaPiezasComponent {
 
+
   @Input() piezas!: Signal<Pieza[]>;
+  @Input() cargando!: Signal<boolean>; // Signal para controlar el estado de carga
 
   // Angular 17+/19: output signals deben declararse como propiedades de clase, no en el constructor ni como métodos
   piezaSeleccionadaSig = output<Pieza>();
-  seleccionMasivaSig = output<string[]>();
+  seleccionMasivaSig = output<number[]>();
+  verHistoria = output<number>();
 
-  selectedIds: Set<string> = new Set();
+  selectedIds: Set<number> = new Set();
 
   constructor() {}
 
   get allSelected(): boolean {
-    return this.piezas() && this.piezas().length > 0 && this.piezas().every(p => this.selectedIds.has(p.idPieza));
+    return this.piezas() && this.piezas().length > 0 && this.piezas().every(p => this.selectedIds.has(p.IDPieza));
   }
 
   isSelected(pieza: Pieza): boolean {
@@ -31,9 +35,9 @@ export class TablaPiezasComponent {
     event.stopPropagation();
     pieza.isSelected = !pieza.isSelected;
     if (pieza.isSelected) {
-      this.selectedIds.add(pieza.idPieza);
+      this.selectedIds.add(pieza.IDPieza);
     } else {
-      this.selectedIds.delete(pieza.idPieza);
+      this.selectedIds.delete(pieza.IDPieza);
     }
   }
 
@@ -42,9 +46,9 @@ export class TablaPiezasComponent {
     this.piezas().forEach(p => {
       p.isSelected = checked;
       if (checked) {
-        this.selectedIds.add(p.idPieza);
+        this.selectedIds.add(p.IDPieza);
       } else {
-        this.selectedIds.delete(p.idPieza);
+        this.selectedIds.delete(p.IDPieza);
       }
     });
   }
@@ -54,8 +58,13 @@ export class TablaPiezasComponent {
   }
 
   emitirSeleccionMasiva() {
-    const ids = this.piezas().filter(p => p.isSelected).map(p => p.idPieza);
+    const ids = this.piezas().filter(p => p.isSelected).map(p => p.IDPieza);
      this.seleccionMasivaSig.emit(ids);
   }
 
+    
+  onRowClick(pieza: Pieza) {
+    console.log('Pieza seleccionada:', pieza);
+    this.verHistoria.emit(pieza.IDPieza);
+  }
 }

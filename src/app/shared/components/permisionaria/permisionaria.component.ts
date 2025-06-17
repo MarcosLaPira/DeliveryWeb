@@ -1,7 +1,7 @@
 import { Component, signal, computed, EventEmitter, Signal } from '@angular/core';
 import { EstadoTarjeta } from './estado-tarjeta.model';
 import { TablaPiezasComponent } from '../../../features/share-components/tabla-piezas/tabla-piezas.component';
-import { Pieza } from '../../../core/interfaces/Pieza';
+import { Pieza } from '../../../core/interfaces/modelos/Pieza';
 import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 import { ModalAndreaniComponent } from './modal-andreani.component';
 
@@ -68,11 +68,11 @@ export class PermisionariaComponent {
     if (!this.piezasSeleccionadasSignal) return [];
 
     return this.piezasSeleccionadasSignal().map(pieza => ({
-      id: pieza.idPieza,
+      id: pieza.IDPieza,
      // empresa: pieza.permisionaria || 'Desconocida',
-      estadoInterno: pieza.estado,
+      estadoInterno: pieza.Estado,
       estadoAndreani: this.simularEstadoAndreani(pieza),
-      fecha: pieza.fechaCambioEstado || '',
+      fecha: pieza.Fecha || '',
     }));
 
   });
@@ -81,7 +81,7 @@ export class PermisionariaComponent {
   private simularEstadoAndreani(pieza: Pieza): string {
     // Simula el estado en Andreani según el idPieza (puedes mejorar la lógica)
     const estados = ['En tránsito', 'En sucursal', 'Entregado', 'Demorado', 'No encontrado'];
-    const idx = parseInt(pieza.idPieza.replace(/\D/g, ''), 10) % estados.length;
+    const idx = parseInt(String(pieza.IDPieza).replace(/\D/g, ''), 10) % estados.length;
     return estados[idx];
   }
 

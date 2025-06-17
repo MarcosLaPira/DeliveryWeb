@@ -1,0 +1,67 @@
+<div
+  class="h-full z-50 flex items-center justify-center fixed inset-0 backdrop-blur-md"
+  style="pointer-events: all;"
+>
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-6xl w-full relative">
+    <button (click)="cerrar.emit()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">&times;</button>
+    <h2 class="text-lg font-bold mb-4 text-blue-700">Historial de la pieza</h2>
+    <div class="overflow-x-auto max-h-[60vh]">
+      <table class="min-w-full text-xs border">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="p-2 border">IDLog</th>
+            <th class="p-2 border">IDPieza</th>
+            <th class="p-2 border">IDTipoProducto</th>
+            <th class="p-2 border">Secuencia</th>
+            <th class="p-2 border">Chequera</th>
+            <th class="p-2 border">Nro</th>
+            <th class="p-2 border">Version</th>
+            <th class="p-2 border">Nombre Titular</th>
+            <th class="p-2 border">Intentos</th>
+            <th class="p-2 border">Campania</th>
+            <th class="p-2 border">Estado</th>
+            <th class="p-2 border">Permisionaria</th>
+            <th class="p-2 border">Fecha Proceso</th>
+            <th class="p-2 border">Fecha</th>
+            <th class="p-2 border">Sucursal</th>
+            <th class="p-2 border">Estado Rescate</th>
+            <th class="p-2 border">Cuenta</th>
+            <th class="p-2 border">Secuencia Permisionaria</th>
+            <th class="p-2 border">Motivo No Entrega</th>
+            <th class="p-2 border">Usuario</th>
+            <th class="p-2 border">Marca Estado Final Perm</th>
+            <th class="p-2 border">Mensaje</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (h of historial; track h.IDLog) {
+            <tr>
+              <td class="p-2 border">{{ h.IDLog }}</td>
+              <td class="p-2 border">{{ h.IDPieza }}</td>
+              <td class="p-2 border">{{ h.IDTipoProducto }}</td>
+              <td class="p-2 border">{{ h.Secuencia }}</td>
+              <td class="p-2 border">{{ h.Chequera }}</td>
+              <td class="p-2 border">{{ h.Nro }}</td>
+              <td class="p-2 border">{{ h.Version }}</td>
+              <td class="p-2 border">{{ h.NombreTitular }}</td>
+              <td class="p-2 border">{{ h.Intentos }}</td>
+              <td class="p-2 border">{{ h.Campania }}</td>
+              <td class="p-2 border">{{ h.Estado }}</td>
+              <td class="p-2 border">{{ h.Permisionaria }}</td>
+              <td class="p-2 border">{{ h.FechaProceso }}</td>
+              <td class="p-2 border">{{ h.Fecha }}</td>
+              <td class="p-2 border">{{ h.Sucursal }}</td>
+              <td class="p-2 border">{{ h.EstadoRescate }}</td>
+              <td class="p-2 border">{{ h.Cuenta }}</td>
+              <td class="p-2 border">{{ h.SecuenciaPermisionaria }}</td>
+              <td class="p-2 border">{{ h.MotivoNoEntrega }}</td>
+              <td class="p-2 border">{{ h.Usuario }}</td>
+              <td class="p-2 border">{{ h.MarcaEstadoFinalPerm }}</td>
+              <td class="p-2 border">{{ h.Mensaje }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -12,116 +12,62 @@
 
     <div class=" flex flex-col p-2 w-full h-full   ">
 
-      <form 
-        [formGroup]="filtrosForm" 
-        (ngSubmit)="aplicarFiltros()" 
-        class="flex  w-full h-full flex-col gap-2 bg-white rounded-xl shadow-lg p-1 w-full max-w-md mx-auto"
-        >
+    <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltro()" class="flex flex-col gap-4 bg-white rounded-xl shadow-lg p-4 w-full max-w-md mx-auto">
 
-        <div class="filter-group">
+  <!-- Filtros -->
+  <div *ngFor="let filtro of [
+    { key: 'idTipoProducto', label: 'Tipo de Producto', type: 'text', placeholder: 'Ingrese Tipo de Producto' },
+    { key: 'idEstado', label: 'Estado', type: 'text', placeholder: 'Ingrese Estado' },
+    { key: 'idPermisionaria', label: 'Permisionaria', type: 'text', placeholder: 'Ingrese Permisionaria' },
+    { key: 'idUsuario', label: 'ID Usuario', type: 'text', placeholder: 'Ingrese ID Usuario' },
+    { key: 'idpieza', label: 'ID Pieza', type: 'text', placeholder: 'Ingrese ID Pieza' },
+    { key: 'locacion', label: 'Locación', type: 'text', placeholder: 'Ingrese Locación' },
+    { key: 'idSucursal', label: 'Sucursal', type: 'text', placeholder: 'Ingrese Sucursal' },
+    { key: 'nombreTitular', label: 'Nombre Titular', type: 'text', placeholder: 'Ingrese Nombre Titular' },
+    { key: 'identificadorPieza', label: 'Identificador Pieza', type: 'text', placeholder: 'Ingrese Identificador Pieza' },
+    { key: 'nroSecuenciaPermisionaria', label: 'Nro Secuencia Permisionaria', type: 'text', placeholder: 'Ingrese Nro Secuencia Permisionaria' },
+    { key: 'nroSecuenciaAdministradora', label: 'Nro Secuencia Administradora', type: 'text', placeholder: 'Ingrese Nro Secuencia Administradora' },
+    { key: 'numeroCuenta', label: 'Número de Cuenta', type: 'text', placeholder: 'Ingrese Número de Cuenta' },
+    { key: 'numeroDocumento', label: 'Número de Documento', type: 'text', placeholder: 'Ingrese Número de Documento' },
+    { key: 'cuitcuil', label: 'CUIT/CUIL', type: 'text', placeholder: 'Ingrese CUIT/CUIL' },
+    { key: 'fechaDesde', label: 'Fecha Desde', type: 'date', placeholder: '' },
+    { key: 'fechaHasta', label: 'Fecha Hasta', type: 'date', placeholder: '' },
+    { key: 'estados', label: 'Estados', type: 'text', placeholder: 'Ingrese Estados' },
+    { key: 'idMotivoNoEntrega', label: 'Motivo No Entrega', type: 'text', placeholder: 'Ingrese Motivo No Entrega' },
+    { key: 'codigoNovedad', label: 'Código Novedad', type: 'text', placeholder: 'Ingrese Código Novedad' },
+    { key: 'idTipoDocumento', label: 'Tipo de Documento', type: 'text', placeholder: 'Ingrese Tipo de Documento' },
+    { key: 'numeroCliente', label: 'Número de Cliente', type: 'text', placeholder: 'Ingrese Número de Cliente' },
+    { key: 'estadoDesde', label: 'Estado Desde', type: 'date', placeholder: '' },
+    { key: 'tipoCarta', label: 'Tipo de Carta', type: 'text', placeholder: 'Ingrese Tipo de Carta' }
+  ]">
+    <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+      <button type="button"
+        class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+        (click)="toggleExpand(filtro.key)">
+        <span>{{ filtro.label }}</span>
+        <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+          [ngClass]="{'rotate-180': expanded[filtro.key]}"
+          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div *ngIf="expanded[filtro.key]" class="filter-input mt-3">
+        <input
+          [type]="filtro.type"
+          [placeholder]="filtro.placeholder"
+          [formControlName]="filtro.key"
+          class="w-full border border-blue-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
+        />
+      </div>
+    </div>
+  </div>
 
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('dni')">
-            DNI
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['dni']">▼</span>
-          </div>
-
-          @if (expanded['dni']) {
-
-            <div class="filter-input mt-2">
-              <input type="number" placeholder="Ingrese DNI" formControlName="dni" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-              
-              @if (filtrosForm.get('dni')?.invalid && (filtrosForm.get('dni')?.dirty || filtrosForm.get('dni')?.touched) && filtrosForm.get('dni')?.value) {
-                <div class="text-red-600 text-xs mt-1">
-                  Solo se permiten números en el DNI.
-                </div>
-              }
-              
-            </div>
-          }
-
-        </div>
-
-        <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('administradora')">
-            Administradora
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['administradora']">▼</span>
-          </div>
-          @if (expanded['administradora']) {
-            <div class="filter-input mt-2">
-              <input type="text" placeholder="Ingrese Administradora" formControlName="administradora" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-            </div>
-          }
-        </div>
-        <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('permisionaria')">
-            Permisionaria
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['permisionaria']">▼</span>
-          </div>
-          @if (expanded['permisionaria']) {
-            <div class="filter-input mt-2">
-              <input type="text" placeholder="Ingrese Permisionaria" formControlName="permisionaria" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-            </div>
-          }
-        </div>
-        <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('tarjeta')">
-            Tarjeta
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['tarjeta']">▼</span>
-          </div>
-          @if (expanded['tarjeta']) {
-            <div class="filter-input mt-2">
-              <input type="text" placeholder="Ingrese Tarjeta" formControlName="tarjeta" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-            </div>
-          }
-        </div>
-        <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('fechaDesde')">
-            Fecha desde
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['fechaDesde']">▼</span>
-          </div>
-          @if (expanded['fechaDesde']) {
-            <div class="filter-input mt-2 flex gap-2">
-              <input type="date" formControlName="fechaDesde" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-             
-            </div>
-          }
-        </div>
-          <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('fechaHasta')">
-            Fecha hasta
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['fechaHasta']">▼</span>
-          </div>
-          @if (expanded['fechaHasta']) {
-            <div class="filter-input mt-2 flex gap-2">
-             
-              <input type="date" formControlName="fechaHasta" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-            </div>
-          }
-        </div>
-        <div class="filter-group">
-          <div class="filter-label flex items-center justify-between font-semibold text-blue-700 cursor-pointer select-none" (click)="toggleExpand('estados')">
-            Estados
-            <span class="arrow transition-transform duration-200" [class.rotate-180]="expanded['estados']">▼</span>
-          </div>
-          @if (expanded['estados']) {
-            <div class="filter-input mt-2">
-              <div formArrayName="estados" class="estados-list max-h-32 overflow-y-auto bg-gray-50 rounded p-2 border border-solid border-gray-300">
-                @for (estado of estadosDisponibles; track $index) {
-                  <label class="estado-item flex items-center gap-2 mb-1 text-sm">
-                    <input type="checkbox" [formControlName]="$index" class="accent-blue-600" />
-                    <span>{{ estado }}</span>
-                  </label>
-                }
-              </div>
-            </div>
-          }
-        </div>
-        <div class="flex gap-2 justify-end mt-4">
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Aplicar filtros</button>
-          <button type="button" (click)="resetFilters()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Limpiar filtros</button>
-        </div>
-      </form>
-
+  <!-- Botones -->
+  <div class="flex gap-2 justify-end mt-4">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Aplicar filtros</button>
+    <button type="button" (click)="resetFilters()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Limpiar filtros</button>
+  </div>
+</form>
     </div>
 
 

@@ -1,11 +1,22 @@
 import { Injectable, signal, Signal } from '@angular/core';
-import { Pieza } from '../../core/interfaces/Pieza';
+import { Pieza } from '../interfaces/modelos/Pieza';
+
 
 @Injectable({ providedIn: 'root' })
 export class PiezasSeleccionadasService {
     
   private readonly piezasSeleccionadasSignal = signal<Pieza[]>([]);
   private piezasMapas: Pieza[] = [];
+
+   private piezasCargadas: Pieza[] = [];
+
+  setPiezasCargadas(piezas: Pieza[]) {
+    this.piezasCargadas = piezas;
+  }
+
+  getPiezasCargadas(): Pieza[] {
+    return this.piezasCargadas;
+  }
 
   setPiezasSeleccionadas(piezas: Pieza[]) {
     this.piezasSeleccionadasSignal.set(piezas);

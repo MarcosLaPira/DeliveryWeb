@@ -2,6 +2,8 @@ import { Component, input, Input, OnChanges, output, Signal, signal } from '@ang
 import { Filtro } from '../../../core/interfaces/Filtro';
 import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule, Validators} from '@angular/forms'
 import { CommonModule } from '@angular/common';
+import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
+import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
 
 @Component({
   selector: 'app-advanced-filters',
@@ -13,9 +15,10 @@ export class AdvancedFiltersComponent implements OnChanges {
 
 
   @Input() mostrar: boolean = false;
-  @Input() filtros: Filtro = {};
+  @Input() filtros: FiltroconsultaPieza = new FiltroconsultaPieza();
   
-  filtroAplicado = output<Filtro>();
+  filtroAplicado = output<FiltroconsultaPieza>();
+  stringDelFiltro = output<string>();
   filtroEliminado = output<keyof Filtro>();
   limpiarTodos = output<void>();
 
@@ -24,46 +27,67 @@ export class AdvancedFiltersComponent implements OnChanges {
   limpiarTodosSignal = signal<boolean>(false);
 
   filtrosForm: FormGroup;
+   filtro: FiltroconsultaPieza = new FiltroconsultaPieza();
   estadosDisponibles = ['Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado','Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado']; // ej.
 
   expanded: { [key: string]: boolean } = {};
 
   // Inicializa el formulario con los controles necesarios
-  constructor(private fb: FormBuilder) {
+ constructor(
+    private fb: FormBuilder,
+    private deliveryApiService: DeliveryApiService
+  ) {
     this.filtrosForm = this.fb.group({
-      dni: ['', [Validators.pattern('^[0-9]*$')]],
-      administradora: [''],
-      permisionaria: [''],
-      tarjeta: [''],
-      fechaDesde: [''],
-      fechaHasta: [''],
-      // Crea un FormArray para los estados, inicializado con los estados disponibles
-      // Cada estado es un FormControl que puede ser true o false
-      estados: this.fb.array(this.estadosDisponibles.map(() => false)),
+      idpieza: [''],
+      locacion: [''],
+      idTipoProducto: [''],
+      idSucursal: [''],
+      nombreTitular: [''],
+      identificadorPieza: [''],
+      nroSecuenciaPermisionaria: [''],
+      nroSecuenciaAdministradora: [''],
+      numeroCuenta: [''],
+      numeroDocumento: [''],
+      cuitcuil: [''],
+      fechaDesde: [''], // Fecha por defecto para probar
+      fechaHasta: [''],     
+      estados: [''],
+      idMotivoNoEntrega: [''],
+      codigoNovedad: [''],
+      idTipoDocumento: [''],
+      numeroCliente: [''],
+      estadoDesde: [''],
+      tipoCarta: ['']
     });
-
   }
 
   // Detecta cambios en los inputs y actualiza el formulario
   // ngOnChanges se llama cuando los inputs cambian, ideal para sincronizar el formulario con los filtros
   ngOnChanges() {
-
     if (this.filtrosForm && this.filtros) {
-      
-      // Actualiza los valores del formulario con los filtros proporcionados
       this.filtrosForm.patchValue({
-        dni: this.filtros.dni || '',
-        administradora: this.filtros.administradora || '',
-        permisionaria: this.filtros.permisionaria || '',
-        tarjeta: this.filtros.tarjeta || '',
+        idpieza: this.filtros.idpieza || '',
+        locacion: this.filtros.locacion || '',
+        idTipoProducto: this.filtros.idTipoProducto || '',
+        idSucursal: this.filtros.idSucursal || '',
+        nombreTitular: this.filtros.nombreTitular || '',
+        identificadorPieza: this.filtros.identificadorPieza || '',
+        nroSecuenciaPermisionaria: this.filtros.nroSecuenciaPermisionaria || '',
+        nroSecuenciaAdministradora: this.filtros.nroSecuenciaAdministradora || '',
+        numeroCuenta: this.filtros.numeroCuenta || '',
+        numeroDocumento: this.filtros.numeroDocumento || '',
+        cuitcuil: this.filtros.cuitcuil || '',
         fechaDesde: this.filtros.fechaDesde || '',
         fechaHasta: this.filtros.fechaHasta || '',
-        estados: this.estadosDisponibles.map(e => this.filtros.estados?.includes(e) || false)
+        estados: this.filtros.estados || '',
+        idMotivoNoEntrega: this.filtros.idMotivoNoEntrega || '',
+        codigoNovedad: this.filtros.codigoNovedad || '',
+        idTipoDocumento: this.filtros.idTipoDocumento || '',
+        numeroCliente: this.filtros.numeroCliente || '',
+        estadoDesde: this.filtros.estadoDesde || '',
+        tipoCarta: this.filtros.tipoCarta || ''
       }, { emitEvent: false });
-
-
     }
-
   }
 
   toggleExpand(key: string) {
@@ -71,24 +95,20 @@ export class AdvancedFiltersComponent implements OnChanges {
   }
 
   // Método para aplicar los filtros y emitir el evento con los datos del formulario
-  aplicarFiltros() {
+  aplicarFiltro() {
+    console.log('Aplicando filtro con los siguientes valores:');
+     console.log(this.filtrosForm.value); // <-- Verifica aquí
+    // Mapea los valores del formulario al objeto filtro
+    Object.assign(this.filtro, this.filtrosForm.value);
+    console.log('Filtro aplicado:', this.filtro);
 
-    if (this.filtrosForm.valid) {
+    // Construye el string de filtro
+    const filtroQuery = this.filtro.GetFiltroToText();
 
-      const formValue = this.filtrosForm.value;
-      const filtros: Filtro = {
-        dni: formValue.dni,
-        tarjeta: formValue.tarjeta,
-        administradora: formValue.administradora,
-        permisionaria: formValue.permisionaria,
-        fechaDesde: formValue.fechaDesde,
-        fechaHasta: formValue.fechaHasta,
-        estados: this.estadosDisponibles.filter((_, i) => formValue.estados[i])
-      };
-      this.filtroAplicado.emit(filtros);
-
-    }
-
+    console.log('Filtro query:', filtroQuery);
+    // Emite el string de filtro al padre
+    this.filtroAplicado.emit(this.filtro);
+    this.stringDelFiltro.emit(filtroQuery);
   }
 
   // Método para resetear todos los filtros

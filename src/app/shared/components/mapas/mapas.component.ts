@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Signal,} from '@angular/core';
-import { Pieza } from '../../../core/interfaces/Pieza';
+import { Pieza } from '../../../core/interfaces/modelos/Pieza';
 import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 
 @Component({
@@ -264,12 +264,17 @@ private agregarMarcadoresPiezas() {
     });
 
     this.marcadoresPiezas = (this.piezas || []).map((pieza: Pieza) => {
+      
+      /*
       if (pieza.coordenadas) {
         const [lat, lng] = pieza.coordenadas.split(',').map(Number);
         return L.marker([lat, lng], { icon: iconoPieza })
-          .bindPopup(`Pieza: ${pieza.idPieza || ''}`)
+          .bindPopup(`Pieza: ${pieza.IDPieza || ''}`)
           .addTo(this.mapa);
       }
+          */
+      
+
       return null;
     }).filter(Boolean);
   });
