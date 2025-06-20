@@ -1,35 +1,108 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, computed, Input, output, signal } from '@angular/core';
 import { Sign } from 'crypto';
 import { Facturacion } from '../../../core/interfaces/facturacion';
 import { Router } from '@angular/router';
+import { Pieza } from '../../../core/interfaces/modelos/Pieza';
+import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 
 @Component({
   selector: 'app-reportes-facturacion',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './reportes-facturacion.component.html',
   styleUrl: './reportes-facturacion.component.css'
 })
 export class ReportesFacturacionComponent {
 
+  filtroForm: FormGroup;
   reportes = output<Facturacion>();
   reportesSeleccionados = signal<Facturacion[]>([]);
 
-  reportesFacturacion = signal<Facturacion[]>([
-    { contrato: 1, empresa: 'Andreani', cantidad: 71, montoFacturado: 1200000 },
-    { contrato: 2, empresa: 'Rapi pago', cantidad: 50, montoFacturado: 850000 },
-    { contrato: 3, empresa: 'Andreani', cantidad: 25, montoFacturado: 2430000 },
-    { contrato: 4, empresa: 'Andreani', cantidad: 1001, montoFacturado: 10200000 },
-    { contrato: 5, empresa: 'Rapi pago', cantidad: 507, montoFacturado: 233000 },
-    { contrato: 6, empresa: 'Andreani', cantidad: 777, montoFacturado: 21430000 },
-  ]);
 
+  piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
+  
+  constructor
+  (
+    private fb: FormBuilder,
+    private piezasSeleccionadasService: PiezasSeleccionadasService,
+    private router: Router,
+    private deliveryApiService: DeliveryApiService,
+    
+  ){
+    //deberia de solo setearse cuando el servicio de pieza seleccionada tiene algo
+  //  this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());
+     this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());  
+      this.filtroForm = this.fb.group({
+      desde: [null],
+      hasta: [null],
+      contrato: ['']
+    });
+  }
+
+   // ...existing code...
+
+
+  ngOnInit() {
+    this.refrescarPiezasSeleccionadas();
+  }
+
+  refrescarPiezasSeleccionadas() {
+    this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());
+  }
+ 
+  onSubmit() {
+    const { desde, hasta, contrato } = this.filtroForm.value;
+    let filtro = '';
+    if (desde) filtro += `fechaDesde=${desde}&`;
+    if (hasta) filtro += `fechaHasta=${hasta}&`;
+    if (contrato) filtro += `nroDeServicio=${contrato}`;
+
+    this.deliveryApiService.GetPieza(filtro).subscribe({
+      next: (piezas: Pieza[]) => this.piezasSeleccionadasSignal.set(piezas),
+      error: () => this.piezasSeleccionadasSignal.set([])
+    });
+  }
+    
+  preciosPorCodigo: { [codigo: string]: number } = {
+  '400028424': 2000,
+  '300000233': 3000,
+  '300000206': 6000,
+  //'300000233': 500,
+  '300000230': 1500,
+  
+  // ...otros códigos
+  };
+
+ resumenPorCodigo = computed(() => {
+    const piezas = this.piezasSeleccionadasSignal();
+    if (!piezas || piezas.length === 0) return [];
+    const agrupado: { [codigo: string]: { CodigoDistribucion: string, contrato: string, permisionaria: string, cantidad: number, monto: number } } = {};
+    for (const pieza of piezas) {
+      const codigo = pieza.NroDeServicio;
+      if (!agrupado[codigo]) {
+        agrupado[codigo] = {
+          CodigoDistribucion: pieza.CodigoDistribucion ?? '-',
+          contrato: pieza.NroDeServicio,
+          permisionaria: pieza.permisionaria ?? '-',
+          cantidad: 0,
+          monto: 0
+        };
+      }
+      agrupado[codigo].cantidad++;
+      agrupado[codigo].monto += this.preciosPorCodigo[codigo] ?? 0;
+    }
+    return Object.entries(agrupado).map(([codigo, data]) => ({ codigo, ...data }));
+  });
+
+  
   filtrosBusqueda = signal<{ desde: Date; hasta: Date; contrato: number | null }>({
     desde: new Date(),
     hasta: new Date(),
     contrato: null
   });
 
-  constructor(private router: Router) {}
+  
 
   emitirFiltros(desde: Date, hasta: Date, contrato: number | null) {
     this.filtrosBusqueda.set({ desde, hasta, contrato });

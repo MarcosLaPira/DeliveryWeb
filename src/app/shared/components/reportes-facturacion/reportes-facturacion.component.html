@@ -3,52 +3,57 @@
 
   <div class="w-full h-full flex flex-row ">
 
-    <div class="w-2/8 gap-2 overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white p-4">
-        
-        <label class="block text-sm font-medium text-gray-700 ">Fecha Desde</label>
-        <input type="date" formControlName="fechaDesde" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2" />
-        
-        <label class="block text-sm font-medium text-gray-700 ">Fecha Hasta</label>
-        <input type="date" formControlName="fechaHasta" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2" />
-        
-        <label class="block text-sm font-medium text-gray-700 ">Número de contrato</label>
-        <input type="number" formControlName="numeroContrato" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2" />
-
-        <label class="block text-sm font-medium text-gray-700 ">N. permisionaria</label>
-        <input type="number" formControlName="numeroG" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2" />
-
-        <label class="block text-sm font-medium text-gray-700 ">N. Administradora</label>
-        <input type="number" formControlName="numeroG" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2" />
-
+    <form [formGroup]="filtroForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <div>
+        <label>Desde</label>
+        <input type="date" formControlName="desde"
+          class="w-full border border-black-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
+         />
       </div>
+      <div>
+        <label>Hasta</label>
+        <input type="date" formControlName="hasta" 
+         class="w-full border border-black-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
+      />
+      </div>
+      <div>
+        <label>Contrato</label>
+        <input type="text" formControlName="contrato" 
+          class="w-full border border-black-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-full mt-2">Buscar</button>
+    </form>
 
     <div class="w-6/8 max-h-[500px] min-h-[500px] overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white ml-4">
     
       <table class="min-w-full text-sm text-center border-separate border-spacing-y-1">
         <thead class=" sticky top-0 z-10 bg-gradient-to-r from-blue-200 to-blue-100">
           <tr>
+             <th class="px-4 py-2 font-semibold text-blue-900">Cod. Distribucion</th> 
             <th class="px-4 py-2 font-semibold text-blue-900">Contrato</th>
             <th class="px-4 py-2 font-semibold text-blue-900">Permisionaria</th>
             <th class="px-4 py-2 font-semibold text-blue-900">Cantidad</th>
             <th class="px-4 py-2 font-semibold text-blue-900">Monto Facturado</th>
           </tr>
         </thead>
-        <tbody>
-          @for (factura of reportesFacturacion(); track factura.contrato) {
-            <tr 
-              (click)="reporteSeleccionado(factura)"
-              class="hover:bg-blue-100 transition border-b border-gray-100">
-              <td class="px-4 py-2">{{ factura.contrato }}</td>
-              <td class="px-4 py-2">{{ factura.empresa }}</td>
-              <td class="px-4 py-2">{{ factura.cantidad }}</td>
-              <td class="px-4 py-2 font-mono text-green-700 font-bold">${{ factura.montoFacturado }}</td>
+       <tbody>
+          @for (row of resumenPorCodigo(); track row.codigo) {
+            <tr>
+              <td>{{ row.CodigoDistribucion }}</td>
+               <td>{{ row.contrato }}</td>
+              <td>{{ row.permisionaria }}</td>
+              <td>{{ row.cantidad }}</td>
+              <td
+                class="text-green-300"
+              >${{ row.monto }}</td>
             </tr>
           }
-          @if (reportesFacturacion().length === 0) {
+          @if (resumenPorCodigo().length === 0) {
             <tr>
-              <td colspan="4" class="text-center text-gray-400 py-6">No se encontraron resultados.</td>
+              <td colspan="4" class="text-center text-gray-400 py-6">No hay piezas seleccionadas.</td>
             </tr>
-          }     
+          }
         </tbody>
       </table>
     </div>

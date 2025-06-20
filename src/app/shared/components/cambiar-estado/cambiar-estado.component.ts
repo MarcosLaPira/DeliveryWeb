@@ -5,6 +5,7 @@ import { AdvancedFiltersComponent } from "../../../features/share-components/adv
 import { TablaPiezasComponent } from "../../../features/share-components/tabla-piezas/tabla-piezas.component";
 import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
+import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 
 @Component({
   selector: 'app-cambiar-estado',
@@ -15,14 +16,15 @@ import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroCons
 export class CambiarEstadoComponent {
   // Datos de ejemplo (puedes reemplazar por fetch real)
   
-  
+  piezas = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
   showFilters = signal(false);
   filtrosActivos = signal<FiltroconsultaPieza>(new FiltroconsultaPieza());
 
   filasPorPaginaSignal = signal(10);
   currentPageSignal = signal(1);
 
-  piezasSeleccionadasSignal: Signal<Pieza[]>;
+  piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
+  cargando = signal<boolean>(false); // Signal para controlar el estado de carga
   
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
@@ -33,10 +35,15 @@ export class CambiarEstadoComponent {
   ]);
 
 
-  constructor(private piezasSeleccionadasService: PiezasSeleccionadasService) {
-      this.piezasSeleccionadasSignal = this.piezasSeleccionadasService.getPiezasSeleccionadas();
-
-      console.log('Piezas seleccionadas:', this.piezasSeleccionadasSignal());
+  
+  constructor
+  (
+    private piezasSeleccionadasService: PiezasSeleccionadasService,
+    private deliveryApiService: DeliveryApiService
+  ){
+    //deberia de solo setearse cuando el servicio de pieza seleccionada tiene algo
+    this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());
+     
   }
 
   nuevoEstado = '';
@@ -45,10 +52,46 @@ export class CambiarEstadoComponent {
     this.showFilters.update(v => !v);
   }
 
+
+
   onFiltroAplicado(filtro: FiltroconsultaPieza) {
     this.filtrosActivos.set(filtro);
+    console.log("los filtros activos son:",filtro )
+
+   
   }
-onFiltroEliminado(key: string) {
+
+  
+  onStringDelFiltro(filtro: string) {
+   
+    this.cargando.set(true);
+
+    try {
+
+      console.log('ya por llamar al servicio:', filtro);
+      this.deliveryApiService.GetPieza(filtro).subscribe({
+        next: (piezas) => {
+          this.piezas.set(piezas);
+          console.log("piezas",this.piezas())
+          this.piezasSeleccionadasSignal.set(piezas);
+            console.log("piezas",this.piezasSeleccionadasSignal())
+          this.cargando.set(false);
+        },
+        error: (err) => {
+
+          console.error('Error al obtener piezas:', err);
+          this.cargando.set(false);
+
+        },
+
+      });
+    } catch (error) {
+      console.error('Excepción al llamar al servicio:', error);
+      this.cargando.set(false);
+    }
+  }
+
+  onFiltroEliminado(key: string) {
     // Elimina la referencia directa al hijo y solo actualiza el estado local de filtros
     this.quitarFiltro(key as keyof FiltroconsultaPieza);
   }

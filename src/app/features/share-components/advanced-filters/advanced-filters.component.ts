@@ -1,9 +1,10 @@
-import { Component, input, Input, OnChanges, output, Signal, signal } from '@angular/core';
+import { Component, input, Input, OnChanges, OnInit, output, Signal, signal } from '@angular/core';
 import { Filtro } from '../../../core/interfaces/Filtro';
 import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule, Validators} from '@angular/forms'
 import { CommonModule } from '@angular/common';
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
+import { Producto } from '../../../core/interfaces/modelos/Productos';
 
 @Component({
   selector: 'app-advanced-filters',
@@ -11,7 +12,7 @@ import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroCons
   templateUrl: './advanced-filters.component.html',
   styleUrl: './advanced-filters.component.css'
 })
-export class AdvancedFiltersComponent implements OnChanges {
+export class AdvancedFiltersComponent implements OnInit,OnChanges {
 
 
   @Input() mostrar: boolean = false;
@@ -31,6 +32,10 @@ export class AdvancedFiltersComponent implements OnChanges {
   estadosDisponibles = ['Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado','Pendiente', 'Aprobado', 'Rechazado','En cutodia', 'En correo', 'El el banco','Entregado', 'Recibido', 'Recontra entregado']; // ej.
 
   expanded: { [key: string]: boolean } = {};
+
+  
+  productosSignal = signal<Producto[]>([]);
+
 
   // Inicializa el formulario con los controles necesarios
  constructor(
@@ -58,6 +63,13 @@ export class AdvancedFiltersComponent implements OnChanges {
       numeroCliente: [''],
       estadoDesde: [''],
       tipoCarta: ['']
+    });
+  }
+
+  ngOnInit() {
+    this.deliveryApiService.getCatalogoProductos().subscribe(resp => {
+      // Si la respuesta es un objeto tipo { "1": {...}, "2": {...} }
+      this.productosSignal.set(resp);
     });
   }
 

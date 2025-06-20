@@ -3,11 +3,11 @@ import { ModalOpcionesComponent } from '../../../features/share-components/modal
 import { AdvancedFiltersComponent } from '../../../features/share-components/advanced-filters/advanced-filters.component';
 import { TablaPiezasComponent } from '../../../features/share-components/tabla-piezas/tabla-piezas.component';
 import { Filtro } from '../../../core/interfaces/Filtro';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PermisionariaComponent } from '../permisionaria/permisionaria.component';
 import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+
 import { Pieza } from '../../../core/interfaces/modelos/Pieza';
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
 import { HistorialPiezaModalComponent } from '../../../features/share-components/HistorialPiezaModal/HistorialPiezaModal.component';
@@ -26,6 +26,8 @@ import { historia } from '../../../core/interfaces/modelos/Historia';
   styleUrl: './consultar-pieza.component.css',
 })
 export class ConsultarPiezaComponent {
+    
+
   //constructor para inyectar servicios y dependencias
   //ngOnInit para inicializar datos o servicios
   //ngafterViewInit para trabajar con componentes hijos y señales
@@ -48,16 +50,64 @@ export class ConsultarPiezaComponent {
   constructor(
     private router: Router,
     private piezasSeleccionadasService: PiezasSeleccionadasService,
-    private deliveryApiService: DeliveryApiService
+    private deliveryApiService: DeliveryApiService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+     
+   
+    const url = window.location.search;
+    const params = new URLSearchParams(url);
+    if (params.get('id') === '1') {
+   
+      this.cargando.set(true);
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=9,1,10,16').subscribe({
+        next: (piezas) => {
+          this.piezas.set(piezas);
+          this.cargando.set(false);
+          this.piezasSeleccionadasService.setPiezasCargadas(piezas);
+        },
+        error: () => {
+          this.cargando.set(false);
+        },
+      });
+      return;
+    }else  if (params.get('id') === '2') {
+        this.cargando.set(true);
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=10,68,98').subscribe({
+        next: (piezas) => {
+          this.piezas.set(piezas);
+          this.cargando.set(false);
+          this.piezasSeleccionadasService.setPiezasCargadas(piezas);
+        },
+        error: () => {
+          this.cargando.set(false);
+        },
+      });
+      return;
+    }else  if (params.get('id') === '3') {
+        this.cargando.set(true);
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=7,11,17,19,44,70,95,105,200,201,202,210').subscribe({
+        next: (piezas) => {
+          this.piezas.set(piezas);
+          this.cargando.set(false);
+          this.piezasSeleccionadasService.setPiezasCargadas(piezas);
+        },
+        error: () => {
+          this.cargando.set(false);
+        },
+      });
+      return;
+    }
+    
     const piezasGuardadas = this.piezasSeleccionadasService.getPiezasCargadas();
     if (piezasGuardadas.length > 0) {
       this.piezas.set(piezasGuardadas);
     } else {
       // cargar normalmente desde la API
     }
+      
   }
 
   //se ejecuta después de que la vista del componente se ha inicializado
@@ -273,5 +323,47 @@ export class ConsultarPiezaComponent {
     this.historialPieza.set(null);
   }
 
+  emitirReporteDeFacturacion() {
+     const piezasSeleccionadas = this.piezas().filter((p) => p.isSelected);
+    if (piezasSeleccionadas.length === 0) {
+      alert('Selecciona al menos una pieza para cambiar el estado');
+      return;
+    }
+
+    // Emitir el cambio de estado
+    this.piezasSeleccionadasService.setPiezasSeleccionadas(piezasSeleccionadas);
+    this.router.navigate(['/reportes-facturacion']);
+  }
+
+  obtenerSucursales() {
+      console.log("obtner sucus");
+      this.deliveryApiService.getCatalogoProductos().subscribe(resultados => console.log(resultados));
+    }
+
   // Efecto para cambiar el cursor global
+
+  /*
+  ngAfterViewChecked() {
+    const url = this.router.url;
+    const params = new URLSearchParams(url.split('?')[1] || '');
+   
+    debugger;
+    if (params.get('en') === 'transito') {
+      // Solo llama si aún no hay piezas cargadas
+      if (this.piezas().length === 0) {
+        this.cargando.set(true);
+        this.deliveryApiService.GetPieza('enTransito=true').subscribe({
+          next: (piezas) => {
+            this.piezas.set(piezas);
+            this.cargando.set(false);
+            this.piezasSeleccionadasService.setPiezasCargadas(piezas);
+          },
+          error: () => {
+            this.cargando.set(false);
+          }
+        });
+      }
+    }
+  }
+    */
 }

@@ -6,17 +6,19 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { consultaPiezasInitFormData } from '../interfaces/modelos/ConsultaPiezasInitFormData';
 import { DetallePieza } from '../interfaces/modelos/detallePieza';
+import { Producto } from '../interfaces/modelos/Productos';
 
 
 
 
 const HEADERS = new HttpHeaders()
 
- // .set("Access-Control-Allow-Origin", "http://localhost:4200/")
+  .set("Access-Control-Allow-Origin", "http://localhost:4200/")
   .set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
   .set("Access-Control-Allow-Headers", "user,password,Origin,Content-Type,undefinedaccept,accept-language,handle,requestsource")
   .set("undefinedaccept", "application/json")
   .set("accept-language", "en-US,en;q=0.8")
+
 
 
 
@@ -38,8 +40,7 @@ export class DeliveryApiService {
     Sucursales: []
   };
 
-  private _httpClient = inject(HttpClient);
-
+ constructor(private _httpClient: HttpClient) {}
   //constructor(private _httpClient: HttpClient) {}
 
   
@@ -101,4 +102,35 @@ export class DeliveryApiService {
     console.log(this.urlDeliveryApiDetalle + "/" + idpieza);
     return this._httpClient.get<DetallePieza[]>(this.urlDeliveryApiDetalle + "/" + idpieza);
   }
+
+  
+  usuario: string = 'SIDCOMPCOBDESA';
+  contrasena: string = 'MFoGCSsGAQQBgjdYA6BNMEsGCisGAQQBgjdYAwGgPTA7AgMCAAACAmYCAgIAgAQIraCvcaIGJNEEENHyMbRDc7V8bx3EN7ZxXyYEENjM1Zk8/taiU2ppwfzYCAQ=';
+  handle: string = 'dts';
+
+  //devulve los productos de delivery(tipos de productos)
+  getCatalogoProductos(): Observable<Producto[]> {
+  
+    console.log("entre al catalogo")
+    return this._httpClient.get<Producto[]>('http://localhost:52441/api/v1/delivery/app/piezas/catalogos/productos',
+      {   
+        withCredentials: true
+      }
+    );
+      
+
+      /*
+      return this._httpClient.get<any[]>('http://localhost:52441/api/v1/delivery/catalogos/productos', {
+        headers: new HttpHeaders({
+          'user': 'SIDCOMPCOBDESA',
+          'password' : 'MFoGCSsGAQQBgjdYA6BNMEsGCisGAQQBgjdYAwGgPTA7AgMCAAACAmYCAgIAgAQIraCvcaIGJNEEENHyMbRDc7V8bx3EN7ZxXyYEENjM1Zk8/taiU2ppwfzYCAQ=',
+          'handle': 'dts'
+          // El interceptor igual agregará los suyos
+        }), withCredentials: true // este va solo si realmente necesitás cookies/autenticación
+
+      });
+      */
+  }
+
+
 }

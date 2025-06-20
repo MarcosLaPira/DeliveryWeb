@@ -141,6 +141,15 @@
             />
           </button>
 
+          <button class="group" title="Reporte de Facturacion">
+            <img
+              src="/cuenta.png"
+              alt="Reporte de Facturación"
+              (click)="emitirReporteDeFacturacion()"
+              class="h-6 w-6 object-contain group-hover:scale-110 transition"
+            />
+          </button>
+
           <button class="group" title="Exportar a Excel">
             <img
               src="/descargar.png"
@@ -159,6 +168,13 @@
           >
             ← Anterior
           </button>
+
+          <button
+             class="px-2 py-1 border rounded hover:bg-gradient-to-br from-primary to-blue-100"
+            (click)="obtenerSucursales()"
+            >Obtener
+          </button>
+
           <button
             class="px-2 py-1 border rounded hover:bg-gradient-to-br from-primary to-blue-100"
             (click)="cambiarPagina(currentPageSignal() + 1)"
@@ -166,6 +182,8 @@
           >
             Siguiente →
           </button>
+
+         
         </div>
       </div>
     </div>

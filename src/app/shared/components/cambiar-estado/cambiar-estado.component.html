@@ -5,6 +5,7 @@
     class="h-full "
     [mostrar]="showFilters()"
     [filtros]="filtrosActivos()"
+    (stringDelFiltro)="onStringDelFiltro($event)"
     (filtroAplicado)="onFiltroAplicado($event)"
     (filtroEliminado)="onFiltroEliminado($event)"
     (limpiarTodos)="onLimpiarTodos()"
@@ -49,7 +50,9 @@
       <div class="w-full max-w-7xl min-w-[700px] max-h-[500px] min-h-[500px] overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white">
         <app-tabla-piezas
           class="w-full"
+          [cargando]="cargando"
           [piezas]="piezasPaginadas"
+          #tablaPiezas
         
         >
         </app-tabla-piezas>
