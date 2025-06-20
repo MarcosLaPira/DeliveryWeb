@@ -13,6 +13,9 @@ import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroCons
 import { HistorialPiezaModalComponent } from '../../../features/share-components/HistorialPiezaModal/HistorialPiezaModal.component';
 import { historia } from '../../../core/interfaces/modelos/Historia';
 
+
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-consultar-pieza',
   imports: [
@@ -366,4 +369,46 @@ export class ConsultarPiezaComponent {
     }
   }
     */
+
+ exportarPiezasAExcel() {
+  const piezas = this.piezas();
+  if (!piezas || piezas.length === 0) {
+    alert('No hay piezas para exportar');
+    return;
+  }
+  // Exporta todos los datos disponibles de cada pieza
+  const data = piezas.map(p => ({ ...p }));
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+  // Obtener el rango de la hoja
+  const range = XLSX.utils.decode_range(ws['!ref']!);
+  // Estilo para la cabecera (azul oscuro, blanco, negrita)
+  const headerStyle = {
+    fill: { patternType: 'solid', fgColor: { rgb: '1E293B' } }, // azul oscuro
+    font: { bold: true, color: { rgb: 'FFFFFF' } }
+  };
+  // Estilos para filas alternas
+  const rowStyle1 = { fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } } }; // blanco
+  const rowStyle2 = { fill: { patternType: 'solid', fgColor: { rgb: 'E0F2FE' } } }; // celeste claro
+  // Aplicar estilo a la cabecera
+  for (let C = range.s.c; C <= range.e.c; ++C) {
+    const cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
+    if (!ws[cell_address]) continue;
+    ws[cell_address].s = headerStyle;
+  }
+  // Aplicar estilos alternos a las filas de datos
+  for (let R = 1; R <= range.e.r; ++R) {
+    const style = (R % 2 === 0) ? rowStyle1 : rowStyle2;
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws[cell_address]) continue;
+      ws[cell_address].s = style;
+    }
+  }
+  // Ajustar ancho de columnas automáticamente
+  const cols = Object.keys(data[0] || {}).map(key => ({ wch: Math.max(12, key.length + 2) }));
+  ws['!cols'] = cols;
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Piezas');
+  XLSX.writeFile(wb, 'piezas.xlsx');
+}
 }
