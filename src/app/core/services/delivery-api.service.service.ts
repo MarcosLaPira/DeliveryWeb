@@ -7,6 +7,10 @@ import { Observable } from 'rxjs';
 import { consultaPiezasInitFormData } from '../interfaces/modelos/ConsultaPiezasInitFormData';
 import { DetallePieza } from '../interfaces/modelos/detallePieza';
 import { Producto } from '../interfaces/modelos/Productos';
+import { Estado } from '../interfaces/modelos/Estado';
+import { Sucursal } from '../interfaces/modelos/Sucursal';
+import { CodigoDistribucion } from '../interfaces/modelos/CodigoDistribucion';
+import { Permisionaria } from '../interfaces/modelos/Permisionaria';
 
 
 
@@ -118,7 +122,6 @@ export class DeliveryApiService {
       }
     );
       
-
       /*
       return this._httpClient.get<any[]>('http://localhost:52441/api/v1/delivery/catalogos/productos', {
         headers: new HttpHeaders({
@@ -132,5 +135,51 @@ export class DeliveryApiService {
       */
   }
 
+  getCatalogoEstados(): Observable<Estado[]> {
+  
+    console.log("entre al catalogo de estados")
+    return this._httpClient.get<Estado[]>('http://localhost:52441/api/v1/delivery/app/piezas/catalogos/estados',
+      {   
+        withCredentials: true
+      }
+    );
+    
+  }
+
+
+  getCatalogoSucursales(): Observable<Sucursal[]> {
+  
+    console.log("entre al catalogo de sucursales")
+    return this._httpClient.get<Sucursal[]>('http://localhost:52441/api/v1/delivery/app/piezas/catalogos/sucursales',
+      {   
+        withCredentials: true
+      }
+    );
+    
+  }
+
+  
+  getCatalogoCodigosDistribucion(): Observable<CodigoDistribucion[]> {
+  
+    console.log("entre al catalogo de codigos de distribucion")
+    return this._httpClient.get<CodigoDistribucion[]>('http://localhost:52441/api/v1/delivery/app/piezas/catalogos/codigosDistribucion',
+      {   
+        withCredentials: true
+      }
+    );
+    
+  }
+
+  
+  getCatalogoPermisionarias(): Observable<Permisionaria[]> {
+  
+    console.log("entre al catalogo de permisionarias")
+    return this._httpClient.get<Permisionaria[]>('http://localhost:52441/api/v1/delivery/app/piezas/catalogos/permisionarias',
+      {   
+        withCredentials: true
+      }
+    );
+    
+  }
 
 }

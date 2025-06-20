@@ -1,5 +1,5 @@
 <div
-  class="transition-all duration-300 ease-in-out  h-full"
+  class="transition-all duration-300 ease-in-out h-full"
   [class.w-64]="mostrar"
   [class.w-0]="!mostrar"
 >
@@ -8,68 +8,223 @@
     [class.opacity-100]="mostrar"
     [class.opacity-0]="!mostrar"
   >
+    <div class="flex flex-col p-2 w-full h-full">
+
+     <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltro()" class="flex flex-col gap-4 bg-white rounded-xl shadow-lg p-4 w-full max-w-md mx-auto">
+
+       
+        <!-- Filtro: Tipo de Producto (checkboxes) -->
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('idTipoProducto')">
+            <span>Tipo de Producto</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['idTipoProducto']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div *ngIf="expanded['idTipoProducto']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let prod of productosSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="prod.idProd"
+                      (change)="onTipoProductoChange($event, prod.idProd)"
+                      [checked]="filtrosForm.value.idTipoProducto?.includes(prod.idProd)" />
+                {{ prod.descProd }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estados -->
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('estados')">
+            <span>Estados</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['estados']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div *ngIf="expanded['estados']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let est of estadosSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="est.idEst"
+                      (change)="onEstadosChange($event, est.idEst)"
+                      [checked]="filtrosForm.value.estados?.includes(est.idEst)" />
+                {{ est.descEst }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sucursales -->
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('idSucursal')">
+            <span>Sucursales</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['idSucursal']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div *ngIf="expanded['idSucursal']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let suc of sucursalesSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="suc.idSuc"
+                      (change)="onSucursalChange($event, suc.idSuc)"
+                      [checked]="filtrosForm.value.idSucursal?.includes(suc.idSuc)" />
+                {{ suc.descSuc }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permisionarias -->
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('idPermisionaria')">
+            <span>Permisionarias</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['idPermisionaria']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div *ngIf="expanded['idPermisionaria']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let perm of permisionariaSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="perm.idPerm"
+                      (change)="onPermisionariaChange($event, perm.idPerm)"
+                      [checked]="filtrosForm.value.idPermisionaria?.includes(perm.idPerm)" />
+                {{ perm.descPerm }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+       
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('codigoDeDistribucion')"
+          >
+            <span>Códigos de Distribucion</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['codigoDeDistribucion']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+
+          </button>
+
+          <div *ngIf="expanded['codigoDeDistribucion']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let cod of codigosDistribucionSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="cod.idCodDist"
+                      (change)="onCodigoDeDistribucionChange($event, cod.idCodDist)"
+                      [checked]="filtrosForm.value.codigoDeDistribucion?.includes(cod.idCodDist)" />
+                {{ cod.descCodDist }}
+              </label>
+            </div>
+          </div>
+        </div>
+      
+      
+
+         
+        <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+          <button type="button"
+            class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            (click)="toggleExpand('codigoNovedad')">
+            <span>Códigos de Novedad</span>
+            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+              [ngClass]="{'rotate-180': expanded['codigoNovedad']}"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div *ngIf="expanded['codigoNovedad']" class="filter-input mt-3 max-h-48 overflow-y-auto">
+            <div class="flex flex-col gap-1">
+              <label *ngFor="let cod of codigosDeNovedadSignal()" class="flex items-center gap-2">
+                <input type="checkbox"
+                      [value]="cod.idCodNov"
+                      (change)="onCodigoNovedadChange($event, cod.idCodNov)"
+                      [checked]="filtrosForm.value.codigoNovedad?.includes(cod.idCodNov)" />
+                {{ cod.idCodNov }}
+              </label>
+            </div>
+          </div>
+        </div>
+        
 
 
-    <div class=" flex flex-col p-2 w-full h-full   ">
 
-    <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltro()" class="flex flex-col gap-4 bg-white rounded-xl shadow-lg p-4 w-full max-w-md mx-auto">
 
-  <!-- Filtros -->
-  <div *ngFor="let filtro of [
-    { key: 'idTipoProducto', label: 'Tipo de Producto', type: 'text', placeholder: 'Ingrese Tipo de Producto' },
-    { key: 'idEstado', label: 'Estado', type: 'text', placeholder: 'Ingrese Estado' },
-    { key: 'idPermisionaria', label: 'Permisionaria', type: 'text', placeholder: 'Ingrese Permisionaria' },
-    { key: 'idUsuario', label: 'ID Usuario', type: 'text', placeholder: 'Ingrese ID Usuario' },
-    { key: 'idpieza', label: 'ID Pieza', type: 'text', placeholder: 'Ingrese ID Pieza' },
-    { key: 'locacion', label: 'Locación', type: 'text', placeholder: 'Ingrese Locación' },
-    { key: 'idSucursal', label: 'Sucursal', type: 'text', placeholder: 'Ingrese Sucursal' },
-    { key: 'nombreTitular', label: 'Nombre Titular', type: 'text', placeholder: 'Ingrese Nombre Titular' },
-    { key: 'identificadorPieza', label: 'Identificador Pieza', type: 'text', placeholder: 'Ingrese Identificador Pieza' },
-    { key: 'nroSecuenciaPermisionaria', label: 'Nro Secuencia Permisionaria', type: 'text', placeholder: 'Ingrese Nro Secuencia Permisionaria' },
-    { key: 'nroSecuenciaAdministradora', label: 'Nro Secuencia Administradora', type: 'text', placeholder: 'Ingrese Nro Secuencia Administradora' },
-    { key: 'numeroCuenta', label: 'Número de Cuenta', type: 'text', placeholder: 'Ingrese Número de Cuenta' },
-    { key: 'numeroDocumento', label: 'Número de Documento', type: 'text', placeholder: 'Ingrese Número de Documento' },
-    { key: 'cuitcuil', label: 'CUIT/CUIL', type: 'text', placeholder: 'Ingrese CUIT/CUIL' },
-    { key: 'fechaDesde', label: 'Fecha Desde', type: 'date', placeholder: '' },
-    { key: 'fechaHasta', label: 'Fecha Hasta', type: 'date', placeholder: '' },
-    { key: 'estados', label: 'Estados', type: 'text', placeholder: 'Ingrese Estados' },
-    { key: 'idMotivoNoEntrega', label: 'Motivo No Entrega', type: 'text', placeholder: 'Ingrese Motivo No Entrega' },
-    { key: 'codigoNovedad', label: 'Código Novedad', type: 'text', placeholder: 'Ingrese Código Novedad' },
-    { key: 'idTipoDocumento', label: 'Tipo de Documento', type: 'text', placeholder: 'Ingrese Tipo de Documento' },
-    { key: 'numeroCliente', label: 'Número de Cliente', type: 'text', placeholder: 'Ingrese Número de Cliente' },
-    { key: 'estadoDesde', label: 'Estado Desde', type: 'date', placeholder: '' },
-    { key: 'tipoCarta', label: 'Tipo de Carta', type: 'text', placeholder: 'Ingrese Tipo de Carta' }
-  ]">
-    <div class="filter-group border-b border-gray-200 pb-2 mb-2">
-      <button type="button"
-        class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
-        (click)="toggleExpand(filtro.key)">
-        <span>{{ filtro.label }}</span>
-        <svg class="w-4 h-4 ml-2 transition-transform duration-200"
-          [ngClass]="{'rotate-180': expanded[filtro.key]}"
-          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </button>
-      <div *ngIf="expanded[filtro.key]" class="filter-input mt-3">
-        <input
-          [type]="filtro.type"
-          [placeholder]="filtro.placeholder"
-          [formControlName]="filtro.key"
-          class="w-full border border-blue-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
-        />
-      </div>
+        <!-- Resto de filtros (excluyendo idTipoProducto) -->
+        <div *ngFor="let filtro of [
+                 
+          { key: 'idUsuario', label: 'ID Usuario', type: 'text', placeholder: 'Ingrese ID Usuario' },
+          { key: 'idpieza', label: 'ID Pieza', type: 'text', placeholder: 'Ingrese ID Pieza' },
+          { key: 'locacion', label: 'Locación', type: 'text', placeholder: 'Ingrese Locación' },     
+          { key: 'nombreTitular', label: 'Nombre Titular', type: 'text', placeholder: 'Ingrese Nombre Titular' },
+          { key: 'identificadorPieza', label: 'Identificador Pieza', type: 'text', placeholder: 'Ingrese Identificador Pieza' },
+          { key: 'nroSecuenciaPermisionaria', label: 'Nro Secuencia Permisionaria', type: 'text', placeholder: 'Ingrese Nro Secuencia Permisionaria' },
+          { key: 'nroSecuenciaAdministradora', label: 'Nro Secuencia Administradora', type: 'text', placeholder: 'Ingrese Nro Secuencia Administradora' },
+          { key: 'numeroCuenta', label: 'Número de Cuenta', type: 'text', placeholder: 'Ingrese Número de Cuenta' },
+          { key: 'numeroDocumento', label: 'Número de Documento', type: 'text', placeholder: 'Ingrese Número de Documento' },
+          { key: 'cuitcuil', label: 'CUIT/CUIL', type: 'text', placeholder: 'Ingrese CUIT/CUIL' },
+          { key: 'fechaDesde', label: 'Fecha Desde', type: 'date', placeholder: '' },
+          { key: 'fechaHasta', label: 'Fecha Hasta', type: 'date', placeholder: '' },     
+          { key: 'idMotivoNoEntrega', label: 'Motivo No Entrega', type: 'text', placeholder: 'Ingrese Motivo No Entrega' },   
+          { key: 'idTipoDocumento', label: 'Tipo de Documento', type: 'text', placeholder: 'Ingrese Tipo de Documento' },
+          { key: 'numeroCliente', label: 'Número de Cliente', type: 'text', placeholder: 'Ingrese Número de Cliente' },
+          { key: 'estadoDesde', label: 'Estado Desde', type: 'date', placeholder: '' },
+          { key: 'tipoCarta', label: 'Tipo de Carta', type: 'text', placeholder: 'Ingrese Tipo de Carta' }
+        ]">
+          <div class="filter-group border-b border-gray-200 pb-2 mb-2">
+            <button type="button"
+              class="filter-label flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-blue-600 focus:outline-none transition"
+              (click)="toggleExpand(filtro.key)">
+              <span>{{ filtro.label }}</span>
+              <svg class="w-4 h-4 ml-2 transition-transform duration-200"
+                [ngClass]="{'rotate-180': expanded[filtro.key]}"
+                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div *ngIf="expanded[filtro.key]" class="filter-input mt-3">
+              <input
+                [type]="filtro.type"
+                [placeholder]="filtro.placeholder"
+                [formControlName]="filtro.key"
+                class="w-full border border-blue-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex gap-2 justify-end mt-4">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Aplicar filtros</button>
+          <button type="button" (click)="resetFilters()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Limpiar filtros</button>
+        </div>
+
+      </form>
+
     </div>
-  </div>
-
-  <!-- Botones -->
-  <div class="flex gap-2 justify-end mt-4">
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Aplicar filtros</button>
-    <button type="button" (click)="resetFilters()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Limpiar filtros</button>
-  </div>
-</form>
-    </div>
-
 
   </div>
 </div>

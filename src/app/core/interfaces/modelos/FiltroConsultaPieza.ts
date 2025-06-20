@@ -14,6 +14,7 @@ export class FiltroconsultaPieza {
     fechaHasta                : string="";
     estados                   : string="";
     idMotivoNoEntrega         : string="";
+    codigoDeDistribucion             : string="";
     codigoNovedad             : string="";
     idTipoDocumento           : string="";
     numeroCliente             : string="";
@@ -68,6 +69,7 @@ export class FiltroconsultaPieza {
     (this.fechaHasta                 ? "fechaHasta=" + this.fechaHasta + "&" : '') +
    // (this.estados                    ? "estados=" + this.estados + "&" : '') +
     (this.idMotivoNoEntrega          ? "idMotivoNoEntrega=" + this.idMotivoNoEntrega + "&" : '') +
+    (this.codigoDeDistribucion        ? "codigoDeDistribucion=" + this.codigoDeDistribucion + "&" : '') +
     (this.codigoNovedad              ? "codigoNovedad=" + this.codigoNovedad + "&" : '') +
     (this.idTipoDocumento            ? "idTipoDocumento=" + this.idTipoDocumento + "&" : '') +
     (this.numeroCliente              ? "numeroCliente=" + this.numeroCliente + "&" : '') +
