@@ -6,6 +6,7 @@ import { TablaPiezasComponent } from "../../../features/share-components/tabla-p
 import { PiezasSeleccionadasService } from '../../../core/services/piezas-seleccionadas.service';
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
+import { Estado } from '../../../core/interfaces/modelos/Estado';
 
 @Component({
   selector: 'app-cambiar-estado',
@@ -14,6 +15,7 @@ import { DeliveryApiService } from '../../../core/services/delivery-api.service.
   imports: [AdvancedFiltersComponent, TablaPiezasComponent]
 })
 export class CambiarEstadoComponent {
+
   // Datos de ejemplo (puedes reemplazar por fetch real)
   
   piezas = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
@@ -26,13 +28,17 @@ export class CambiarEstadoComponent {
   piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
   cargando = signal<boolean>(false); // Signal para controlar el estado de carga
   
+  estadosSignal = signal<Estado[]>([]);
+  
+
+  
+
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
   @ViewChild('filtrosComponent') filtrosComponent!: AdvancedFiltersComponent;
 
-  estados = signal<string[]>([
-    'Pendiente', 'En tránsito', 'Entregado', 'Devuelto', 'En custodia', 'En correo', 'En banco'
-  ]);
+  nuevoEstado: number | undefined;
+
 
 
   
@@ -46,7 +52,18 @@ export class CambiarEstadoComponent {
      
   }
 
-  nuevoEstado = '';
+  ngOnInit() {
+  
+    this.deliveryApiService.getCatalogoEstados().subscribe(resp => {
+      this.estadosSignal.set(resp);
+       console.log("estados cargados:", this.estadosSignal());
+    });
+ 
+  }
+
+  
+
+  
 
   toggleFiltro() {
     this.showFilters.update(v => !v);
@@ -134,7 +151,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
 
   abrirCambioEstado(pieza: Pieza) {
     this.piezaSeleccionada.set(pieza);
-    this.nuevoEstado = pieza.Estado;
+    this.nuevoEstado = Number(pieza.Estado);
   }
 
   confirmarCambioEstado() {
@@ -174,5 +191,57 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     });
   });
 
+  erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
+
+  aplicarCambioDeEstado() {
+    alert("previo a aplicar cambio de etsado");
+
+    const estadoSeleccionado = this.estadosSignal().find(e => e.idEst === this.nuevoEstado);
+
+    const piezasSeleccionadas = this.piezasSeleccionadasSignal();
+    const idNuevoEstado = Number(this.nuevoEstado);
+    const usuario = 'A05212';
+    const idRol = 2;
+
+    if (!piezasSeleccionadas || piezasSeleccionadas.length === 0) {
+      alert('No hay piezas seleccionadas para cambiar de estado');
+      return;
+    }
+
+    // Limpia errores previos
+    this.erroresCambioEstadoSignal.set([]);
+
+    piezasSeleccionadas.forEach(pieza => {
+      this.deliveryApiService.PostAplicarCambioDeEstado(
+        pieza.IDPieza,
+        Number(pieza.IDTipoProducto),
+        idNuevoEstado,
+        usuario,
+        idRol
+      ).subscribe({
+        next: (resp: any) => {
+          // Si el backend devuelve un error en el JSON, lo guardamos
+          if (resp && resp.Error) {
+            const erroresActuales = this.erroresCambioEstadoSignal();
+            this.erroresCambioEstadoSignal.set([
+              ...erroresActuales,
+              { idPieza: pieza.IDPieza, detalle: resp.DetalleError || 'Error desconocido' }
+            ]);
+          } else {
+            console.log(`Cambio de estado aplicado a pieza ${pieza.IDPieza}`, resp);
+          }
+        },
+        error: (err) => {
+          // También puedes guardar errores de red aquí si lo deseas
+          const erroresActuales = this.erroresCambioEstadoSignal();
+          this.erroresCambioEstadoSignal.set([
+            ...erroresActuales,
+            { idPieza: pieza.IDPieza, detalle: 'Error de red o servidor' }
+          ]);
+          console.error(`Error al cambiar estado de pieza ${pieza.IDPieza}`, err);
+        }
+      });
+    });
+  }
 
 }

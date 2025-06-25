@@ -82,15 +82,24 @@
         </div>
 
         <div class="flex items-center gap-2">
+          
           <label for="estado">Estado:</label>
           <select
             id="estado"
             class="border rounded px-2 py-1"          
           >
-            @for (estado of estados(); track estado) {
-              <option [value]="estado">{{ estado }}</option>
+            @for (estado of estadosSignal(); track estado) {
+              <option [value]="estado.idEst">{{ estado.descEst }}</option>
             }
           </select>
+
+            <button          
+             class="bg-secondary text-surface p-2 rounded-4xl transition-all duration-200 hover:scale-105 hover:bg-primary"
+             (click)="aplicarCambioDeEstado()"
+             >
+            Aplicar
+            </button>
+
         </div>
 
         <!-- Navegación -->

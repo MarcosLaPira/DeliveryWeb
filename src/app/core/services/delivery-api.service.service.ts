@@ -182,4 +182,34 @@ export class DeliveryApiService {
     
   }
 
+
+   PostAplicarCambioDeEstado(
+    idPieza: number,
+    idTipoProducto: number,
+    idNuevoEstado: number,
+    usuario: string,
+    idRol: number
+  ): Observable<any[]> {
+    console.log("entre al cambio de estado");
+
+    const params = new HttpParams()
+      .set('idPieza', idPieza)
+      .set('idTipoProducto', idTipoProducto)
+      .set('idNuevoEstado', idNuevoEstado)
+      .set('usuario', usuario)
+      .set('idRol', idRol)
+      .set('user', 'SIDCOMPCOBDESA')
+      .set('password', 'MFoGCSsGAQQBgjdYA6BNMEsGCisGAQQBgjdYAwGgPTA7AgMCAAACAmYCAgIAgAQIraCvcaIGJNEEENHyMbRDc7V8bx3EN7ZxXyYEENjM1Zk8/taiU2ppwfzYCAQ=')
+
+    return this._httpClient.post<any[]>(
+      'http://localhost:52441/api/v1/delivery/piezas/cambioEstado',
+      {}, // cuerpo vacío
+      {
+        params,
+       // withCredentials: true
+      }
+    );
+
+  }
+
 }

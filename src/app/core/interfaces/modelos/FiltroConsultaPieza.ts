@@ -67,7 +67,7 @@ export class FiltroconsultaPieza {
     (this.cuitcuil                   ? "cuitcuil=" + this.cuitcuil + "&" : '') +
     (this.fechaDesde                 ? "fechaDesde=" + this.fechaDesde + "&" : '') +
     (this.fechaHasta                 ? "fechaHasta=" + this.fechaHasta + "&" : '') +
-   // (this.estados                    ? "estados=" + this.estados + "&" : '') +
+    (this.estados                    ? "estados=" + this.estados + "&" : '') +
     (this.idMotivoNoEntrega          ? "idMotivoNoEntrega=" + this.idMotivoNoEntrega + "&" : '') +
     (this.codigoDeDistribucion        ? "codigoDeDistribucion=" + this.codigoDeDistribucion + "&" : '') +
     (this.codigoNovedad              ? "codigoNovedad=" + this.codigoNovedad + "&" : '') +
