@@ -1,5 +1,20 @@
 # DeliveryMigration
 
+Como instalar?
+
+
+--insatlar dependencias de node
+npm install 
+
+--isntalar angular 
+npm install -g @angular/cli
+
+--levantar localmente
+npm start
+
+
+
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
 
 ## Development server
