@@ -27,7 +27,11 @@ const HEADERS = new HttpHeaders()
 
 @Injectable()
 export class WinAuthInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    throw new Error('Method not implemented.');
+  }
 
+  /*
  constructor(){}
 
 
@@ -41,4 +45,5 @@ export class WinAuthInterceptor implements HttpInterceptor {
     console.log("por el interceptor" + req);
     return next.handle(req);
   }
+    */
 }

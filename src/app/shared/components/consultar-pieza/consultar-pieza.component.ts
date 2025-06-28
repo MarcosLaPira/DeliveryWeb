@@ -165,6 +165,7 @@ export class ConsultarPiezaComponent {
     this.cargando.set(true);
     try {
       console.log('ya por llamar al servicio:', filtro);
+      
       this.deliveryApiService.GetPieza(filtro).subscribe({
         next: (piezas) => {
           console.log('Piezas obtenidas:', piezas);

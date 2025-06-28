@@ -16,9 +16,10 @@ import { Estado } from '../../../core/interfaces/modelos/Estado';
 })
 export class CambiarEstadoComponent {
 
+
   // Datos de ejemplo (puedes reemplazar por fetch real)
   
-  piezas = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
+ 
   showFilters = signal(false);
   filtrosActivos = signal<FiltroconsultaPieza>(new FiltroconsultaPieza());
 
@@ -30,11 +31,13 @@ export class CambiarEstadoComponent {
   
   estadosSignal = signal<Estado[]>([]);
   
-
-  
-
+  estadoSeleccionadoSignal = signal<number | null>(null); // Estado seleccionado
+  erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
+ 
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
+
+
   @ViewChild('filtrosComponent') filtrosComponent!: AdvancedFiltersComponent;
 
   nuevoEstado: number | undefined;
@@ -88,8 +91,8 @@ export class CambiarEstadoComponent {
       console.log('ya por llamar al servicio:', filtro);
       this.deliveryApiService.GetPieza(filtro).subscribe({
         next: (piezas) => {
-          this.piezas.set(piezas);
-          console.log("piezas",this.piezas())
+          //this.piezas.set(piezas);
+          //console.log("piezas",this.piezas())
           this.piezasSeleccionadasSignal.set(piezas);
             console.log("piezas",this.piezasSeleccionadasSignal())
           this.cargando.set(false);
@@ -149,26 +152,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     this.currentPageSignal.set(1);
   }
 
-  abrirCambioEstado(pieza: Pieza) {
-    this.piezaSeleccionada.set(pieza);
-    this.nuevoEstado = Number(pieza.Estado);
-  }
-
-  confirmarCambioEstado() {
-    const pieza = this.piezaSeleccionada();
-    if (pieza) {
-      // Actualiza el estado en el array de piezas
-      const piezas = this.piezasSeleccionadasSignal().map(p =>
-        p.IDPieza === pieza.IDPieza ? { ...p, estado: this.nuevoEstado } : p
-      );
-      //this.piezasSeleccionadasSignal.set(piezas);
-      this.piezaSeleccionada.set(null);
-    }
-  }
-
-  cancelarCambioEstado() {
-    this.piezaSeleccionada.set(null);
-  }
+  
 
 
    piezasPaginadas = computed(() => {
@@ -191,57 +175,112 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     });
   });
 
-  erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
-
-  aplicarCambioDeEstado() {
-    alert("previo a aplicar cambio de etsado");
-
-    const estadoSeleccionado = this.estadosSignal().find(e => e.idEst === this.nuevoEstado);
-
-    const piezasSeleccionadas = this.piezasSeleccionadasSignal();
-    const idNuevoEstado = Number(this.nuevoEstado);
+  async aplicarCambioDeEstado() {
+    alert("Aplicar cambio de estado");
+  
+    const piezasSeleccionadas = this.piezasSeleccionadasSignal().filter(pieza => pieza.isSelected); // Filtrado directo
+    const idNuevoEstado = this.estadoSeleccionadoSignal();
     const usuario = 'A05212';
     const idRol = 2;
-
+  
     if (!piezasSeleccionadas || piezasSeleccionadas.length === 0) {
       alert('No hay piezas seleccionadas para cambiar de estado');
       return;
     }
-
-    // Limpia errores previos
-    this.erroresCambioEstadoSignal.set([]);
-
-    piezasSeleccionadas.forEach(pieza => {
-      this.deliveryApiService.PostAplicarCambioDeEstado(
-        pieza.IDPieza,
-        Number(pieza.IDTipoProducto),
+  
+    if (!idNuevoEstado) {
+      alert('Debe seleccionar un estado válido');
+      return;
+    }
+  
+    this.cargando.set(true);
+    this.erroresCambioEstadoSignal.set([]); // Limpia los errores previos
+  
+    // Variables para contar resultados
+    let exitosas = 0;
+    let fallidas = 0;
+    const errores: { idPieza: number; detalle: string }[] = [];
+  
+    // Crea un array de promesas para manejar las solicitudes
+    const solicitudes = piezasSeleccionadas.map(pieza => {
+      const { IDPieza } = pieza;
+  
+      return this.deliveryApiService.PostAplicarCambioDeEstado(
+        IDPieza,
+        17,
         idNuevoEstado,
         usuario,
         idRol
-      ).subscribe({
-        next: (resp: any) => {
-          // Si el backend devuelve un error en el JSON, lo guardamos
-          if (resp && resp.Error) {
-            const erroresActuales = this.erroresCambioEstadoSignal();
-            this.erroresCambioEstadoSignal.set([
-              ...erroresActuales,
-              { idPieza: pieza.IDPieza, detalle: resp.DetalleError || 'Error desconocido' }
-            ]);
+      ).toPromise() // Convierte el Observable en una Promesa
+        .then((resp: any) => {
+          if (!resp || resp.length === 0) {
+            console.log(`Respuesta vacía para la pieza ${IDPieza}`);
+            exitosas++;
+          } else if (resp[0].Error) {
+            const detalleError = resp[0].DetalleError || 'Error desconocido';
+            this.agregarErrorCambioEstado(IDPieza, detalleError);
+            fallidas++;
           } else {
-            console.log(`Cambio de estado aplicado a pieza ${pieza.IDPieza}`, resp);
+            exitosas++;
           }
-        },
-        error: (err) => {
-          // También puedes guardar errores de red aquí si lo deseas
-          const erroresActuales = this.erroresCambioEstadoSignal();
-          this.erroresCambioEstadoSignal.set([
-            ...erroresActuales,
-            { idPieza: pieza.IDPieza, detalle: 'Error de red o servidor' }
-          ]);
-          console.error(`Error al cambiar estado de pieza ${pieza.IDPieza}`, err);
-        }
-      });
+        })
+        .catch((err) => {
+          const detalleError = err[0]?.DetalleError || 'Error de red o servidor';
+          this.agregarErrorCambioEstado(IDPieza, detalleError);
+          fallidas++;
+        });
     });
+  
+    // Espera a que todas las solicitudes se completen
+    await Promise.all(solicitudes);
+  
+    // Limpia las piezas seleccionadas después de procesar
+    this.piezasSeleccionadasSignal.set([]);
+    this.cargando.set(false);
+  
+    // Muestra el resumen
+    this.mostrarResumen(exitosas, fallidas, errores);
+  }
+  
+  // Método para mostrar el resumen
+  private mostrarResumen(exitosas: number, fallidas: number, errores: { idPieza: number; detalle: string }[]) {
+    console.log(`Piezas exitosas: ${exitosas}`);
+    console.log(`Piezas con error: ${fallidas}`);
+    console.log('Errores:', errores);
+  
+    alert(`
+      Resumen del cambio de estado:
+      - Piezas exitosas: ${exitosas}
+      - Piezas con error: ${fallidas}
+    `);
+  
+    if (fallidas > 0) {
+      console.log('Detalles de los errores:', errores);
+      // Aquí puedes implementar un modal para mostrar los detalles de los errores
+    }
+  }
+  
+  // Método auxiliar para agregar errores
+  private agregarErrorCambioEstado(idPieza: number, detalle: string) {
+    const erroresActuales = this.erroresCambioEstadoSignal();
+
+    this.erroresCambioEstadoSignal.set([
+      ...erroresActuales,
+      { idPieza, detalle }
+    ]);
+
+    console.log(this.erroresCambioEstadoSignal());
   }
 
+
+  onCambioSeleccionado(event: Event) {
+    const target = event.target as HTMLSelectElement | null;
+    if (target) {
+      const id = parseInt(target.value, 10);
+      this.estadoSeleccionadoSignal.set(isNaN(id) ? null : id);
+    }
+  }
+  
 }
+
+

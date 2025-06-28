@@ -52,14 +52,9 @@ export class DeliveryApiService {
    
     console.log('Llamando a la API de piezas con filtro');
     console.log('Filtro:', filtro);
-    // return this._httpClient.get<Pieza[]>(this.urlDeliveryApiPiezas + filtro, { headers: HEADERS ,  withCredentials:true })
-    //http://localhost:52441/api/v1/delivery/piezas/filtro?idTipoProducto=17&fechaDesde=2024-06-13&fechaHasta=2024-08-13
-    //http://localhost:52441/api/v1/delivery/app/piezas/buscar?idTipoProducto=17&fechaDesde=2024-06-13&fechaHasta=2024-08-13
-
-    //filtro = 'idTipoProducto=17&fechaDesde=2024-06-13&fechaHasta=2024-08-13'
-
+  
      return this._httpClient.get<Pieza[]>('http://localhost:52441/api/v1/delivery/app/piezas/buscar?' + filtro, { withCredentials: true} )
-    //return this._httpClient.get<Pieza[]>('http://localhost:52441/api/v1/delivery/app/piezas/buscar?idTipoProducto=17&fechaDesde=2024-08-01&fechaHasta=2024-09-10', { withCredentials: true} )
+  
   }
 
   /*
@@ -182,34 +177,70 @@ export class DeliveryApiService {
     
   }
 
-
-   PostAplicarCambioDeEstado(
+ 
+  PostAplicarCambioDeEstado(
     idPieza: number,
     idTipoProducto: number,
     idNuevoEstado: number,
     usuario: string,
     idRol: number
   ): Observable<any[]> {
-    console.log("entre al cambio de estado");
-
+  
     const params = new HttpParams()
-      .set('idPieza', idPieza)
-      .set('idTipoProducto', idTipoProducto)
-      .set('idNuevoEstado', idNuevoEstado)
-      .set('usuario', usuario)
-      .set('idRol', idRol)
-      .set('user', 'SIDCOMPCOBDESA')
-      .set('password', 'MFoGCSsGAQQBgjdYA6BNMEsGCisGAQQBgjdYAwGgPTA7AgMCAAACAmYCAgIAgAQIraCvcaIGJNEEENHyMbRDc7V8bx3EN7ZxXyYEENjM1Zk8/taiU2ppwfzYCAQ=')
-
+      .set('idPieza', idPieza.toString())
+      .set('idTipoProducto', idTipoProducto.toString())
+      .set('idNuevoEstado', idNuevoEstado.toString())
+      .set('u', usuario)
+      .set('idRol', idRol.toString());
+  
     return this._httpClient.post<any[]>(
-      'http://localhost:52441/api/v1/delivery/piezas/cambioEstado',
+      '/api/v1/delivery/app/pie/cambioEstado?' + params.toString(),
+      {}, // cuerpo vacío, porque solo se usan los query params
+      { withCredentials: true }
+    );
+  }
+   
+    
+   /*
+  PostAplicarCambioDeEstado(
+    idPieza: number,
+    idTipoProducto: number,
+    idNuevoEstado: number,
+    usuario: string,
+    idRol: number
+  ): Observable<any[]> {
+  
+    const params = new HttpParams()
+      .set('idPieza', idPieza.toString())
+      .set('idTipoProducto', idTipoProducto.toString())
+      .set('idNuevoEstado', idNuevoEstado.toString())
+      .set('idRol', idRol.toString())
+      .set('u', usuario); // nota: el curl usa "u" en vez de "usuario"
+  
+    const headers = new HttpHeaders({
+      'user': 'SIDCOMPCOBDESA',
+      'password': 'MFoGCSsGAQQBgjdYA6BNMEsGCisGAQQBgjdYAwGgPTA7AgMCAAACAmYCAgIAgAQIraCvcaIGJNEEENHyMbRDc7V8bx3EN7ZxXyYEENjM1Zk8/taiU2ppwfzYCAQ=',
+      'handle': 'dts',
+      'Accept': 'application/json'
+    });
+  
+    return this._httpClient.post<any[]>(
+      'https://desadeliveryapi:8443/DeliveryAPI/api/v1/delivery/piezas/cambioEstado?' + params.toString(),
       {}, // cuerpo vacío
       {
-        params,
-       // withCredentials: true
+        headers,
+        withCredentials: true
       }
     );
-
   }
+     */
+    
+  
+
+ 
+
+  
+
+  
 
 }
