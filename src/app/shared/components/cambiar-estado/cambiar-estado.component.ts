@@ -17,6 +17,7 @@ import { Estado } from '../../../core/interfaces/modelos/Estado';
 export class CambiarEstadoComponent {
 
 
+
   // Datos de ejemplo (puedes reemplazar por fetch real)
   
  
@@ -33,7 +34,10 @@ export class CambiarEstadoComponent {
   
   estadoSeleccionadoSignal = signal<number | null>(null); // Estado seleccionado
   erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
+  mostrarResumenOpen= signal<boolean>(false); // Signal para controlar el estado de carga
  
+   exitosas =  signal(0);
+   fallidas = signal(0);
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
 
@@ -197,8 +201,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     this.erroresCambioEstadoSignal.set([]); // Limpia los errores previos
   
     // Variables para contar resultados
-    let exitosas = 0;
-    let fallidas = 0;
+    
     const errores: { idPieza: number; detalle: string }[] = [];
   
     // Crea un array de promesas para manejar las solicitudes
@@ -215,19 +218,19 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
         .then((resp: any) => {
           if (!resp || resp.length === 0) {
             console.log(`Respuesta vacía para la pieza ${IDPieza}`);
-            exitosas++;
+            this.exitosas.update(value => value + 1);
           } else if (resp[0].Error) {
             const detalleError = resp[0].DetalleError || 'Error desconocido';
             this.agregarErrorCambioEstado(IDPieza, detalleError);
-            fallidas++;
+            this.fallidas.update(value => value + 1);
           } else {
-            exitosas++;
+            this.exitosas.update(value => value + 1);
           }
         })
         .catch((err) => {
           const detalleError = err[0]?.DetalleError || 'Error de red o servidor';
           this.agregarErrorCambioEstado(IDPieza, detalleError);
-          fallidas++;
+          this.fallidas.update(value => value + 1);
         });
     });
   
@@ -239,7 +242,8 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     this.cargando.set(false);
   
     // Muestra el resumen
-    this.mostrarResumen(exitosas, fallidas, errores);
+    this.mostrarResumenOpen.set(true);
+   // this.mostrarResumen(exitosas, fallidas, errores);
   }
   
   // Método para mostrar el resumen
@@ -279,6 +283,10 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
       const id = parseInt(target.value, 10);
       this.estadoSeleccionadoSignal.set(isNaN(id) ? null : id);
     }
+  }
+
+  cerrarResumen() {
+    this.mostrarResumenOpen.set(false);
   }
   
 }
