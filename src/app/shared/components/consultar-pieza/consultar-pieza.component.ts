@@ -1,4 +1,4 @@
-import { Component, computed, effect, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, input, signal, ViewChild } from '@angular/core';
 import { ModalOpcionesComponent } from '../../../features/share-components/modal-opciones/modal-opciones.component';
 import { AdvancedFiltersComponent } from '../../../features/share-components/advanced-filters/advanced-filters.component';
 import { TablaPiezasComponent } from '../../../features/share-components/tabla-piezas/tabla-piezas.component';
@@ -34,6 +34,10 @@ export class ConsultarPiezaComponent {
   //constructor para inyectar servicios y dependencias
   //ngOnInit para inicializar datos o servicios
   //ngafterViewInit para trabajar con componentes hijos y señales
+  
+
+ 
+  
 
   piezas = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
   historialPieza = signal<historia[] | null>(null);
@@ -57,15 +61,16 @@ export class ConsultarPiezaComponent {
     private route: ActivatedRoute
   ) {}
 
+  
   ngOnInit() {
      
-   
+    document.body.style.cursor = 'progress';
     const url = window.location.search;
     const params = new URLSearchParams(url);
     if (params.get('id') === '1') {
    
       this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=9,1,10,16').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -74,11 +79,18 @@ export class ConsultarPiezaComponent {
         error: () => {
           this.cargando.set(false);
         },
+        complete: () => {
+         
+          this.cargando.set(false);
+          document.body.style.cursor = 'default'; // Restaura el cursor
+        }
+
       });
       return;
+
     }else  if (params.get('id') === '2') {
         this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=10,68,98').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 10, 68, 98, 97, 102, 103, 8, 12, 18').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -87,11 +99,15 @@ export class ConsultarPiezaComponent {
         error: () => {
           this.cargando.set(false);
         },
+        complete: () => {
+          this.cargando.set(false);
+          document.body.style.cursor = 'default'; // Restaura el cursor
+        }
       });
       return;
     }else  if (params.get('id') === '3') {
         this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-10-01&estados=7,11,17,19,44,70,95,105,200,201,202,210').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=19, 7, 11, 44, 210, 105, 70, 95, 17, 200, 201, 202').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -100,6 +116,10 @@ export class ConsultarPiezaComponent {
         error: () => {
           this.cargando.set(false);
         },
+        complete: () => {
+          this.cargando.set(false);
+          document.body.style.cursor = 'default'; // Restaura el cursor
+        }
       });
       return;
     }
@@ -112,6 +132,28 @@ export class ConsultarPiezaComponent {
     }
       
   }
+    
+  /*
+  ngOnInit() {
+    debugger;
+    document.body.style.cursor = 'progress';
+    this.cargando.set(true);
+
+    this.route.queryParams.subscribe(params => {
+
+      const piezasKey = params['piezasKey'];
+
+      if (piezasKey) {
+        const piezasData = sessionStorage.getItem(piezasKey);
+        this.piezas = piezasData ? JSON.parse(piezasData) : [];
+        console.log('Piezas cargadas:', this.piezas);
+      }
+
+      document.body.style.cursor = 'default';
+      this.cargando.set(false);
+    });
+  }
+    */
 
   //se ejecuta después de que la vista del componente se ha inicializado
 
@@ -163,9 +205,10 @@ export class ConsultarPiezaComponent {
   onStringDelFiltro(filtro: string) {
     // Señal para indicar si está cargando
     this.cargando.set(true);
+    document.body.style.cursor = 'progress';
     try {
       console.log('ya por llamar al servicio:', filtro);
-      
+
       this.deliveryApiService.GetPieza(filtro).subscribe({
         next: (piezas) => {
           console.log('Piezas obtenidas:', piezas);
@@ -177,10 +220,16 @@ export class ConsultarPiezaComponent {
           console.error('Error al obtener piezas:', err);
           this.cargando.set(false);
         },
+        complete: () => {
+          console.log('Llamada al servicio completada');
+          this.cargando.set(false);
+          document.body.style.cursor = 'default'; // Restaura el cursor
+        }
       });
     } catch (error) {
       console.error('Excepción al llamar al servicio:', error);
       this.cargando.set(false);
+      document.body.style.cursor = 'default'; // Restaura el cursor
     }
   }
 
@@ -311,6 +360,7 @@ export class ConsultarPiezaComponent {
     console.log('Ver historial de la pieza con ID: ' + idPieza);
 
     this.cargando.set(true);
+    document.body.style.cursor = 'progress';
     this.deliveryApiService.Gethistoria(idPieza).subscribe({
       next: (historias) => {
         this.historialPieza.set(historias);
@@ -320,6 +370,11 @@ export class ConsultarPiezaComponent {
         this.cargando.set(false);
         alert('Error al obtener historial');
       },
+      complete: () => {
+        console.log('Llamada al servicio de historial completada');
+        this.cargando.set(false);
+        document.body.style.cursor = 'default'; // Restaura el cursor
+      }
     });
   }
 

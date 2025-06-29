@@ -18,6 +18,7 @@ export class ReportesFacturacionComponent {
   filtroForm: FormGroup;
   reportes = output<Facturacion>();
   reportesSeleccionados = signal<Facturacion[]>([]);
+  cargando = signal<boolean>(false); // Signal para controlar el estado de carga  
 
 
   piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
@@ -50,17 +51,28 @@ export class ReportesFacturacionComponent {
   refrescarPiezasSeleccionadas() {
     this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());
   }
- 
   onSubmit() {
+    // Cambia el cursor a "progress" (spinner)
+    document.body.style.cursor = 'progress';
+    this.cargando.set(true); // Activa el estado de carga
+  
     const { desde, hasta, contrato } = this.filtroForm.value;
     let filtro = '';
     if (desde) filtro += `fechaDesde=${desde}&`;
     if (hasta) filtro += `fechaHasta=${hasta}&`;
     if (contrato) filtro += `nroDeServicio=${contrato}`;
-
+  
     this.deliveryApiService.GetPieza(filtro).subscribe({
-      next: (piezas: Pieza[]) => this.piezasSeleccionadasSignal.set(piezas),
-      error: () => this.piezasSeleccionadasSignal.set([])
+      next: (piezas: Pieza[]) => {
+        this.piezasSeleccionadasSignal.set(piezas);
+        this.cargando.set(false); // Desactiva el estado de carga
+        document.body.style.cursor = 'default'; // Restaura el cursor
+      },
+      error: () => {
+        this.piezasSeleccionadasSignal.set([]);
+        this.cargando.set(false); // Desactiva el estado de carga en caso de error
+        document.body.style.cursor = 'default'; // Restaura el cursor
+      }
     });
   }
     

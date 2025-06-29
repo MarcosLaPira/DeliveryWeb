@@ -7,7 +7,7 @@ import { PiezasSeleccionadasService } from '../../../core/services/piezas-selecc
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 import { Estado } from '../../../core/interfaces/modelos/Estado';
-
+import { lastValueFrom } from 'rxjs';
 @Component({
   selector: 'app-cambiar-estado',
   templateUrl: './cambiar-estado.component.html',
@@ -35,9 +35,9 @@ export class CambiarEstadoComponent {
   estadoSeleccionadoSignal = signal<number | null>(null); // Estado seleccionado
   erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
   mostrarResumenOpen= signal<boolean>(false); // Signal para controlar el estado de carga
- 
-   exitosas =  signal(0);
-   fallidas = signal(0);
+  //ocultarResumen = false; // Controla si el resumen debe difuminarse
+  exitosas =  signal(0);
+  fallidas = signal(0);
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
 
@@ -88,6 +88,7 @@ export class CambiarEstadoComponent {
   
   onStringDelFiltro(filtro: string) {
    
+    document.body.style.cursor = 'progress';
     this.cargando.set(true);
 
     try {
@@ -100,19 +101,28 @@ export class CambiarEstadoComponent {
           this.piezasSeleccionadasSignal.set(piezas);
             console.log("piezas",this.piezasSeleccionadasSignal())
           this.cargando.set(false);
+          
         },
         error: (err) => {
 
           console.error('Error al obtener piezas:', err);
           this.cargando.set(false);
+         
 
         },
+        complete: () => {
+          console.log('Llamada al servicio completada');
+          this.cargando.set(false);
+          document.body.style.cursor = 'default'; // Restaura el cursor
+        }
 
       });
     } catch (error) {
       console.error('Excepción al llamar al servicio:', error);
       this.cargando.set(false);
+      document.body.style.cursor = 'default'; // Restaura el cursor
     }
+    
   }
 
   onFiltroEliminado(key: string) {
@@ -179,9 +189,10 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     });
   });
 
+  
   async aplicarCambioDeEstado() {
     alert("Aplicar cambio de estado");
-  
+    debugger;
     const piezasSeleccionadas = this.piezasSeleccionadasSignal().filter(pieza => pieza.isSelected); // Filtrado directo
     const idNuevoEstado = this.estadoSeleccionadoSignal();
     const usuario = 'A05212';
@@ -197,12 +208,9 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
       return;
     }
   
+    document.body.style.cursor = 'progress';
     this.cargando.set(true);
     this.erroresCambioEstadoSignal.set([]); // Limpia los errores previos
-  
-    // Variables para contar resultados
-    
-    const errores: { idPieza: number; detalle: string }[] = [];
   
     // Crea un array de promesas para manejar las solicitudes
     const solicitudes = piezasSeleccionadas.map(pieza => {
@@ -214,7 +222,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
         idNuevoEstado,
         usuario,
         idRol
-      ).toPromise() // Convierte el Observable en una Promesa
+      ).toPromise()
         .then((resp: any) => {
           if (!resp || resp.length === 0) {
             console.log(`Respuesta vacía para la pieza ${IDPieza}`);
@@ -228,41 +236,40 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
           }
         })
         .catch((err) => {
-          const detalleError = err[0]?.DetalleError || 'Error de red o servidor';
+          // Manejo explícito de errores HTTP
+          const detalleError = err?.error?.DetalleError || err?.message || 'Error de red o servidor';
           this.agregarErrorCambioEstado(IDPieza, detalleError);
           this.fallidas.update(value => value + 1);
         });
     });
   
-    // Espera a que todas las solicitudes se completen
-    await Promise.all(solicitudes);
+    try {
+      // Espera a que todas las solicitudes se completen
+      await Promise.all(solicitudes);
+     
+    } catch (globalError) {
+      console.error('Error global durante el procesamiento:', globalError);
+      alert('Ocurrió un error inesperado durante el procesamiento. Por favor, intente nuevamente.');
+     
+    }
   
     // Limpia las piezas seleccionadas después de procesar
     this.piezasSeleccionadasSignal.set([]);
     this.cargando.set(false);
-  
+   
+    document.body.style.cursor = 'default'; // Restaura el cursor
     // Muestra el resumen
-    this.mostrarResumenOpen.set(true);
-   // this.mostrarResumen(exitosas, fallidas, errores);
+    this.mostrarResumen();
   }
+  
+ 
+
+ 
+     
+  
   
   // Método para mostrar el resumen
-  private mostrarResumen(exitosas: number, fallidas: number, errores: { idPieza: number; detalle: string }[]) {
-    console.log(`Piezas exitosas: ${exitosas}`);
-    console.log(`Piezas con error: ${fallidas}`);
-    console.log('Errores:', errores);
-  
-    alert(`
-      Resumen del cambio de estado:
-      - Piezas exitosas: ${exitosas}
-      - Piezas con error: ${fallidas}
-    `);
-  
-    if (fallidas > 0) {
-      console.log('Detalles de los errores:', errores);
-      // Aquí puedes implementar un modal para mostrar los detalles de los errores
-    }
-  }
+ 
   
   // Método auxiliar para agregar errores
   private agregarErrorCambioEstado(idPieza: number, detalle: string) {
@@ -285,8 +292,27 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     }
   }
 
+  // Método para mostrar el resumen
+  private mostrarResumen() {
+   
+    
+    this.mostrarResumenOpen.set(true);
+   // this.ocultarResumen = false;
+
+    // Inicia el temporizador para difuminar el resumen
+    setTimeout(() => {
+      this.mostrarResumenOpen.set(false);
+     // this.ocultarResumen = true;
+      this.fallidas.set(0);
+      this.exitosas.set(0);
+    }, 8000); // 10 segundos
+  }
+
   cerrarResumen() {
+    
     this.mostrarResumenOpen.set(false);
+    this.fallidas.set(0);
+    this.exitosas.set(0);
   }
   
 }

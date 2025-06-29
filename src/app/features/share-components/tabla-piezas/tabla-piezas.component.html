@@ -19,6 +19,10 @@
           <th class="p-2 text-center font-extrabold">ID Cobis</th>
           <th class="p-2 text-center font-extrabold">N° Tarjeta</th>
           <th class="p-2 text-center font-extrabold">Sucursal</th>
+          <th class="p-2 text-center font-extrabold">F. Alta</th>
+          <th class="p-2 text-center font-extrabold">F. Cambio Estado</th>
+
+
           
         </tr>
       </thead>
@@ -53,7 +57,9 @@
               <td class="p-2 align-middle" style="width: 100px; height: 35px;">{{ fila.NumeroCliente }}</td>
               <td class="p-2 align-middle" style="width: 130px; height: 35px;">{{ fila.Nro }}</td>
               <td class="p-2 align-middle" style="min-width: 230px; max-width: 320px; height: 35px;">{{ fila.Sucursal }}</td>
-           
+              <td class="p-2 align-middle" style="width: 130px; height: 35px;">{{ fila.FechaAltaTarjeta }}</td>
+              <td class="p-2 align-middle" style="min-width: 230px; max-width: 320px; height: 35px;">{{ fila.Fecha }}</td>
+
             </tr>
           }
         }

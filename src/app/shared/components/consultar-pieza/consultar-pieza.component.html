@@ -92,7 +92,7 @@
             (change)="cambiarPageSize($any($event.target).value * 1)"
           >
             <!-- Opciones de tamaño de página se da una variable que contiene los tamaños disponibles -->
-            @for (tam of [10, 25, 50, 100]; track tam) {
+            @for (tam of [10, 25, 50, 100,1000,5000,10000]; track tam) {
 
             <option [value]="tam" [selected]="filasPorPaginaSignal() === tam">
               {{ tam }}

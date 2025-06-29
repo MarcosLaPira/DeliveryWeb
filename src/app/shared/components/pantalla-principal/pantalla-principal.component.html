@@ -14,7 +14,7 @@
     <div 
       (click)="irAPiezasEnTransito()"
       class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition cursor-pointer">
-      <div class="text-6xl font-bold text-secondary">30</div>
+      <div class="text-6xl font-bold text-secondary">{{enTransito()}}</div>
       <div class="mt-2 text-xl text-secondary">Piezas en transito</div>
     </div>
   
@@ -22,7 +22,7 @@
 
     <!-- Carta 3 -->
     <div class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition">
-      <div class="text-6xl font-bold text-secondary">12</div>
+      <div class="text-6xl font-bold text-secondary">{{pedidoDeRescate()}}</div>
       <div class="mt-2 text-xl text-secondary">Pedidos de rescate</div>
     </div>
 
@@ -30,7 +30,7 @@
     <div 
         (click)="irAPiezasEntregasDelDia()"
       class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition">
-      <div class="text-6xl font-bold text-secondary">8</div>
+      <div class="text-6xl font-bold text-secondary">{{entregasDelDia()}}</div>
       <div class="mt-2 text-xl text-secondary">Entregas del dia</div>
     </div>
 
@@ -44,7 +44,7 @@
     <div 
       (click)="irAPiezasEnGuarda()"
       class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition">
-      <div class="text-6xl font-bold text-secondary">18</div>
+      <div class="text-6xl font-bold text-secondary">{{enGuarda()}}</div>
       <div class="mt-2 text-xl text-secondary">Piezas en guarda</div>
     </div>
 

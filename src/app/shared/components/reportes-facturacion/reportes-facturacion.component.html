@@ -3,6 +3,7 @@
 
   <div class="w-full h-full flex flex-row ">
 
+   
     <form [formGroup]="filtroForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
       <div>
         <label>Desde</label>
@@ -22,7 +23,8 @@
           class="w-full border border-black-300 focus:border-blue-500 focus:ring focus:ring-blue-200/50 p-2 rounded transition"
         />
       </div>
-      <button type="submit" class="btn btn-primary w-full mt-2">Buscar</button>
+      <button type="submit"  class="bg-secondary text-surface p-2 rounded-4xl transition-all duration-200 hover:scale-105 hover:bg-primary">Buscar</button>
+      
     </form>
 
     <div class="w-6/8 max-h-[500px] min-h-[500px] overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white ml-4">
@@ -38,6 +40,14 @@
           </tr>
         </thead>
        <tbody>
+
+        @if(this.cargando()){
+          <tr>
+            <td colspan="5" class="text-center text-gray-400 py-6">Cargando...</td>
+          </tr>
+        }
+        @else{
+          
           @for (row of resumenPorCodigo(); track row.codigo) {
             <tr>
               <td>{{ row.CodigoDistribucion }}</td>
@@ -54,9 +64,13 @@
               <td colspan="4" class="text-center text-gray-400 py-6">No hay piezas seleccionadas.</td>
             </tr>
           }
-        </tbody>
-      </table>
-    </div>
+
+        }
+
+         
+      </tbody>
+    </table>
+  </div>
 
    
 

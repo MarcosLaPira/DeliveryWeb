@@ -39,6 +39,7 @@ export interface Pieza {
     IDsucursal            :string;
     TipoPlastico           :string;
     NumeroDocumento       :string;
+    FechaAltaTarjeta    :string;
 
 
 }

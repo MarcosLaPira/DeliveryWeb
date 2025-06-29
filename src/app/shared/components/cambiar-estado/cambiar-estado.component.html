@@ -12,9 +12,37 @@
   >
   </app-advanced-filters>
 
+     
   <!--Pantalla principal-->
   <div class="flex-1 h-full w-full  flex-col  transition-all duration-300 ease-in-out bg-background  ">
 
+    @if(mostrarResumenOpen()){
+
+      <div
+        class="absolute top-20 right-2 z-[100] bg-white shadow-lg p-4 rounded align-center flex flex-col justify-center text-center transition-opacity duration-[10s]"
+        [class.opacity-0]="!mostrarResumenOpen()"
+        (transitionend)="cerrarResumen()"
+      >
+        <button
+          class="absolute top-1 right-2 text-md text-gray-500 hover:text-red-700 font-bold"
+          (click)="cerrarResumen()"
+        >
+          X
+        </button>
+
+        <p class="mb-2 text-green-600"><strong>Piezas exitosas:</strong> {{ exitosas() }}</p>
+        <p class="mb-4 text-red-600"><strong>Piezas con error:</strong> {{ fallidas() }}</p>
+       
+       
+        @if(fallidas() > 0){
+          <button class="bg-red-200 text-surface p-2 rounded-4xl transition-all duration-200 hover:scale-105 hover:bg-red-600">
+            Ver
+          </button>
+        }
+      </div>
+    }
+    
+  
     <!-- mostrador de cantidad de filas y filtros activos-->
     <div class="flex flex-row items-center justify-center w-full mt-2">
       <div class="flex flex-row items-center justify-between w-full max-w-7xl min-w-[700px]">
@@ -48,47 +76,10 @@
     <!-- Tabla -->
     <div class="flex justify-center align-center w-full mt-1">
       <div class="w-full max-w-7xl min-w-[700px] max-h-[500px] min-h-[500px] overflow-y-auto overflow-x-auto rounded-xl shadow-xl bg-white">
-        @if(mostrarResumenOpen()){
-          <!-- Resumen del procesamiento -->
-          <div class="p-4">
-            <h2 class="text-xl font-bold mb-4">Resumen del Cambio de Estado</h2>
-            <p class="mb-2"><strong>Piezas exitosas:</strong> {{ this.exitosas() }}</p>
-            <p class="mb-4"><strong>Piezas con error:</strong> {{ this.fallidas() }}</p>
-
-            <!-- Lista de errores -->
-            @if (erroresCambioEstadoSignal().length > 0) {
-              <div class="mt-4">
-                <h3 class="text-lg font-semibold">Errores:</h3>
-                <ul class="list-disc pl-5">
-                  <li *ngFor="let error of errores">
-                    <strong>Pieza {{ error.idPieza }}:</strong> {{ error.detalle }}
-                  </li>
-                </ul>
-              </div>
-            }
-
-            <!-- Botones de acción -->
-            <div class="mt-6 flex justify-end gap-4">
-              <button
-                class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                (click)="cerrarResumen()"
-              >
-                Volver
-              </button>
-              @if (erroresCambioEstadoSignal().length > 0) {
-                <button
-                  class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                
-                >
-                  Consultar Errores
-                </button>
-              }
-            </div>
-          </div>
-         
-        }
-        @else{
-          <app-tabla-piezas
+      
+        
+       
+        <app-tabla-piezas
           class="w-full"
           [cargando]="cargando"
           [piezas]="piezasPaginadas"
@@ -96,9 +87,10 @@
         
         >
         </app-tabla-piezas>
-        }
+        
        
       </div>
+
     </div>
 
     <!--Paginacion-->
@@ -129,7 +121,7 @@
 
           <select
             id="estado"
-            class="border rounded px-2 py-1" 
+            class="border rounded px-2 py-1 text-center" 
             (change)="onCambioSeleccionado($event)" 
            
 
