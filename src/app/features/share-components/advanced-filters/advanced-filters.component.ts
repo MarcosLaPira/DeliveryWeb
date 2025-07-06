@@ -1,4 +1,4 @@
-import { Component, input, Input, OnChanges, OnInit, output, Signal, signal } from '@angular/core';
+import { Component, computed, input, Input, OnChanges, OnInit, output, Signal, signal } from '@angular/core';
 import { Filtro } from '../../../core/interfaces/Filtro';
 import{FormArray, FormBuilder, FormControl,FormGroup,ReactiveFormsModule, Validators} from '@angular/forms'
 import { CommonModule } from '@angular/common';
@@ -10,6 +10,7 @@ import { Sucursal } from '../../../core/interfaces/modelos/Sucursal';
 import { CodigoDistribucion } from '../../../core/interfaces/modelos/CodigoDistribucion';
 import { Permisionaria } from '../../../core/interfaces/modelos/Permisionaria';
 import { CodigoNovedad } from '../../../core/interfaces/modelos/CodigoNovedad';
+import { CatalogosService } from '../../../core/services/catalogos.service';
 
 @Component({
   selector: 'app-advanced-filters',
@@ -38,23 +39,35 @@ export class AdvancedFiltersComponent implements OnInit,OnChanges {
 
   expanded: { [key: string]: boolean } = {};
 
-  
+  /*  
   productosSignal = signal<Producto[]>([]);
   estadosSignal = signal<Estado[]>([]);
   sucursalesSignal = signal<Sucursal[]>([]);
   codigosDistribucionSignal = signal<CodigoDistribucion[]>([]);
+  permisionariaSignal = signal<Permisionaria[]>([]);
+
+  */ 
 
   codigosDeNovedadSignal = signal<CodigoNovedad[]>([
     { idCodNov: 'ALTA' },
     { idCodNov: 'UPGR' }
   ]);
 
-  permisionariaSignal = signal<Permisionaria[]>([]);
+
+
+
+  estadosSignal = computed(() => this.catalogo.estados() ?? []);
+  productosSignal = computed(() => this.catalogo.productos() ?? []);
+  sucursalesSignal = computed(() => this.catalogo.sucursales() ?? []);
+  codigosDistribucionSignal = computed(() => this.catalogo.codDistrib() ?? []);
+  permisionariaSignal = computed(() => this.catalogo.permisionarias() ?? []);
+
 
   // Inicializa el formulario con los controles necesarios
  constructor(
     private fb: FormBuilder,
-    private deliveryApiService: DeliveryApiService
+    private deliveryApiService: DeliveryApiService,
+    private catalogo: CatalogosService
   ) {
     this.filtrosForm = this.fb.group({
       idpieza: [''],
@@ -81,6 +94,7 @@ export class AdvancedFiltersComponent implements OnInit,OnChanges {
     });
   }
   ngOnInit() {
+    /*
 
     this.deliveryApiService.getCatalogoProductos().subscribe(resp => {
       this.productosSignal.set(resp);
@@ -106,13 +120,17 @@ export class AdvancedFiltersComponent implements OnInit,OnChanges {
       this.permisionariaSignal.set(resp);
        console.log("permisionaria cargados:", this.permisionariaSignal());
     });
+    */
 
-   
-
-
-
+    this.catalogo.cargarProductos();
+    this.catalogo.cargarEstados();
+    this.catalogo.cargarSucursales();
+    this.catalogo.cargarCodigosDistribucion();
+    this.catalogo.cargarPermisionarias();
+  
     
   }
+
 
   // Detecta cambios en los inputs y actualiza el formulario
   // ngOnChanges se llama cuando los inputs cambian, ideal para sincronizar el formulario con los filtros

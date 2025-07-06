@@ -9,6 +9,7 @@ import { DeliveryApiService } from '../../../core/services/delivery-api.service.
 import { Estado } from '../../../core/interfaces/modelos/Estado';
 import { lastValueFrom } from 'rxjs';
 import { Sucursal } from '../../../core/interfaces/modelos/Sucursal';
+import { CatalogosService } from '../../../core/services/catalogos.service';
 @Component({
   selector: 'app-cambiar-estado',
   templateUrl: './cambiar-estado.component.html',
@@ -31,7 +32,10 @@ export class CambiarEstadoComponent {
   piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
   cargando = signal<boolean>(false); // Signal para controlar el estado de carga
   
-  estadosSignal = signal<Estado[]>([]);
+  //estadosSignal = signal<Estado[]>([]);
+
+  sucursalesSignal = computed(() => this.catalogo.sucursales() ?? []);
+  estadosSignal = computed(() => this.catalogo.estados() ?? []);
   
   estadoSeleccionadoSignal = signal<number | null>(null); // Estado seleccionado
   erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
@@ -41,7 +45,7 @@ export class CambiarEstadoComponent {
   fallidas = signal(0);
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
-  sucursalesSignal = signal<Sucursal[]>([]);
+  //sucursalesSignal = signal<Sucursal[]>([]);
   sucursalSeleccionadaSignal = signal<number | null>(null); // sucursal seleccionado
 
 
@@ -55,7 +59,8 @@ export class CambiarEstadoComponent {
   constructor
   (
     private piezasSeleccionadasService: PiezasSeleccionadasService,
-    private deliveryApiService: DeliveryApiService
+    private deliveryApiService: DeliveryApiService,
+    private catalogo: CatalogosService
   ){
     //deberia de solo setearse cuando el servicio de pieza seleccionada tiene algo
     this.piezasSeleccionadasSignal.set(this.piezasSeleccionadasService.getPiezasSeleccionadas()());
@@ -64,6 +69,7 @@ export class CambiarEstadoComponent {
 
   ngOnInit() {
   
+    /*
     this.deliveryApiService.getCatalogoEstados().subscribe(resp => {
       this.estadosSignal.set(resp);
        console.log("estados cargados:", this.estadosSignal());
@@ -74,7 +80,9 @@ export class CambiarEstadoComponent {
        console.log("sucursales cargados:", this.sucursalesSignal());
     });
 
-
+    */
+    this.catalogo.cargarEstados();
+    this.catalogo.cargarSucursales();
 
  
   }
