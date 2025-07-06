@@ -109,7 +109,7 @@ export class ConsultarPiezaComponent {
     if (params.get('id') === '1') {//piezas en transito
    
       this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2025-05-01&fechaHasta=2025-07-7&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -129,7 +129,7 @@ export class ConsultarPiezaComponent {
 
     }else  if (params.get('id') === '2') {
         this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 10, 68, 98, 97, 102, 103, 8, 12, 18').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2025-05-01&fechaHasta=2025-07-7&estados=55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 10, 68, 98, 97, 102, 103, 8, 12, 18').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -146,7 +146,7 @@ export class ConsultarPiezaComponent {
       return;
     }else  if (params.get('id') === '3') {
         this.cargando.set(true);
-      this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=19, 7, 11, 44, 210, 105, 70, 95, 17, 200, 201, 202').subscribe({
+      this.deliveryApiService.GetPieza('fechaDesde=2025-05-01&fechaHasta=2025-07-7&estados=19, 7, 11, 44, 210, 105, 70, 95, 17, 200, 201, 202').subscribe({
         next: (piezas) => {
           this.piezas.set(piezas);
           this.cargando.set(false);
@@ -161,7 +161,29 @@ export class ConsultarPiezaComponent {
         }
       });
       return;
-    }
+    }else  if (params.get('id') === '4') {
+      this.cargando.set(true);
+    this.deliveryApiService.GetPieza('fechaDesde=2025-05-01&fechaHasta=2025-07-7').subscribe({
+      next: (piezasRecibidas) => {
+
+        const estadosRescate = ['1','2','3','4','5','6','7'];
+        this.piezas.set(piezasRecibidas.filter(pieza => estadosRescate.includes(pieza.IDEstadoRescate)));
+
+        this.cargando.set(false);
+        this.piezasSeleccionadasService.setPiezasCargadas(piezasRecibidas);
+      },
+      error: () => {
+        this.cargando.set(false);
+      },
+      complete: () => {
+        this.cargando.set(false);
+        document.body.style.cursor = 'default'; // Restaura el cursor
+      }
+    });
+    return;
+  }
+  
+    
     
     const piezasGuardadas = this.piezasSeleccionadasService.getPiezasCargadas();
     if (piezasGuardadas.length > 0) {

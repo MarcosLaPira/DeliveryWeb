@@ -21,7 +21,9 @@
   
 
     <!-- Carta 3 -->
-    <div class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition">
+    <div
+      (click)="irAPiezasPedidosDeRescate()" 
+      class="flex flex-col justify-center items-center bg-surface p-6 rounded-lg shadow-lg text-center hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition">
       <div class="text-6xl font-bold text-secondary">{{pedidoDeRescate()}}</div>
       <div class="mt-2 text-xl text-secondary">Pedidos de rescate</div>
     </div>

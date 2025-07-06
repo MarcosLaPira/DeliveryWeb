@@ -35,12 +35,12 @@ export class PantallaPrincipalComponent  implements OnInit {
     this.cargando.set(true); // Activa el estado de carga
    // this.cursor.set('progress'); // Cambia el cursor a "progress"
     document.body.style.cursor = 'progress';
-    const filtro = 'fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21'
+    const filtro = 'fechaDesde=2024-09-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21'
   
-    const filtro2 = 'fechaDesde=2024-01-01&fechaHasta=2024-12-30'
+    const filtro2 = 'fechaDesde=2025-05-01&fechaHasta=2025-07-7'
     this.deliveryApiService.GetPieza(filtro2).subscribe({
       next: (piezas) => {
-        console.log("Piezas recibidas:", piezas); // Verifica que las piezas se reciban correctamente
+       
         this.piezas.set(piezas);
         this.cargando.set(false);
         this.calcularMetricas(piezas);
@@ -61,10 +61,10 @@ export class PantallaPrincipalComponent  implements OnInit {
   pedidoDeRescate = signal<number>(0);
 
   calcularMetricas(piezas: Pieza[]) {
-    console.log("piezas:", piezas); 
+   
 
     // Filtra y cuenta las piezas en tránsito = 1
-    const estadosEnTransito = ['160', '170', '180', '181', '182', '183', '184', '185', '186', '187', '188', '189', '190', '191', '192', '193', '194', '195', '99', '100', '101', '69', '27', '106', '203', '31', '23', '4', '5', '6', '21']; // Conjunto de estados que representan "En Transito"
+    const estadosEnTransito = ['160', '170', '180', '181', '182', '183', '184', '185', '186', '187', '188', '189', '190', '191', '192', '193', '194', '195', '99', '100', '101', '69', '27', '106', '203', '31', '23', '4', '5', '6', '21','9','16','20','46']; // Conjunto de estados que representan "En Transito"
    this.enTransito.set(piezas.filter(pieza => estadosEnTransito.includes(pieza.IDEstado)).length);  
     //this.piezasEnTransito.set(enTransito);
 
@@ -111,7 +111,7 @@ export class PantallaPrincipalComponent  implements OnInit {
 
   irAPiezasPedidosDeRescate() {
     this.router.navigate(['/consultar-pieza'], {
-      queryParams: { id: 3 },
+      queryParams: { id: 4 },
     });
   }
 }

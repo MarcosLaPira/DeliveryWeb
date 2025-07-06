@@ -1,10 +1,11 @@
 import { Component, Input, Output, Signal, output } from '@angular/core';
 import { Pieza } from '../../../core/interfaces/modelos/Pieza';
+import { EstadoRescatePipe } from "../../../core/pipes/estadoRescate.pipe";
 
 
 @Component({
   selector: 'app-tabla-piezas',
-  imports: [],
+  imports: [EstadoRescatePipe],
   templateUrl: './tabla-piezas.component.html',
   styleUrl: './tabla-piezas.component.css'
 })

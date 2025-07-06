@@ -42,34 +42,56 @@
               @for (pieza of piezas(); track pieza.IDPieza) {
 
               <li
-              class="p-4 m-2 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all duration-200 cursor-pointer bg-white      hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition"
+              class=" flex flex-row p-3 m-3 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all duration-200 cursor-pointer bg-white      hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition"
               (click)="seleccionarPieza(pieza)"
 
               >
-                <div class="flex justify-between items-center mb-1">
 
-                  <h3 class="font-semibold text-gray-800 text-base">{{ pieza.NombreTitular }}</h3>
-                 
-                  <span
-                    class="text-xs px-2 py-1 rounded-full font-medium"
-                    [ngClass]="{
-                      'bg-green-100 text-green-800': pieza.Estado === 'Entregada',
-                      'bg-yellow-100 text-yellow-800': pieza.Estado === 'En tránsito',
-                      'bg-red-100 text-red-800': pieza.Estado === 'Rechazada'
-                    }"
-                  >
-                    {{ pieza.Estado }}
-                  </span>
+                <div class="w-70">
+                  <div class="flex justify-between items-center mb-1">
+
+                    <h3 class="font-semibold text-gray-800 text-base">{{ pieza.NombreTitular }}</h3>
+                   
+                   
+                  </div>
+                
+                  <div class="text-sm text-gray-600">
+                    <p><strong>Producto:</strong> {{ pieza.TipoProducto }}</p>
+                    <p><strong>Fecha:</strong> {{ pieza.Fecha }}</p>
+                    <p><strong>Estado:</strong> {{ pieza.Estado }}</p>
+                    @if (pieza.IDEstadoRescate != null) {
+                      <p><strong>Estado de rescate:</strong> {{ (pieza.IDEstadoRescate )| appEstadoRescate }}</p>
+                    }
+                  </div>
+
                 </div>
-              
-                <div class="text-sm text-gray-600">
-                  <p><strong>Producto:</strong> {{ pieza.TipoProducto }}</p>
-                  <p><strong>Fecha:</strong> {{ pieza.Fecha }}</p>
-                  <p><strong>ID:</strong> {{ pieza.IDPieza }}</p>
+               
+
+                <div class="ml-5 gap-2 flex flex-col justify-between">
+
+                  <button class="group" title="Pedir Rescate">
+                    <img
+                      src="/rescate.png"
+                      alt="Pedir Rescate"
+                      (click)="hacerRescate(pieza.IDPieza) ; $event.stopPropagation()"
+                      class="h-10 w-10 object-contain group-hover:scale-110 transition"
+                    />
+                  </button>
+
+                  <button class="group" title="Pedir Reenvio ultimo domicilio">
+                    <img
+                      src="/reenvio.png"
+                      alt="Pedir Reenvio ultimo domicilio"
+                      (click)="hacerReenvio(pieza.IDPieza) ; $event.stopPropagation()"
+                    
+                      class="h-10 w-10 object-contain group-hover:scale-110 transition"
+                    />
+                  </button>
+                 
                 </div>
 
                
-
+                
 
               </li>
               
@@ -90,3 +112,15 @@
     </div>
   </div>
 </nav>
+@if (mensajeUsuario()) {
+  <div 
+    class="fixed top-20 right-3 z-[9999] px-4 py-3 rounded-lg shadow-lg animate-fade-in transition-all duration-300"
+    [class]="
+        rescateOreenvioSucces() 
+          ? 'bg-green-100 border border-green-300 text-green-800'
+          : 'bg-red-100 border border-red-300 text-red-800'
+    "
+  >
+    {{ tipoMensaje() }}
+  </div>
+}

@@ -235,7 +235,28 @@ export class DeliveryApiService {
     );
   }
      */
+
+  
+ 
+  PostAplicarRescate(
+    idPieza: number,
+    idSuc: number,
     
+  ): Observable<any[]> {
+  
+    const params = new HttpParams()
+      .set('idPieza', idPieza.toString())
+      .set('idSuc', idSuc.toString())
+  
+    return this._httpClient.post<any[]>(
+      '/api/v1/delivery/app/rescates?' + params.toString(),
+      {}, // cuerpo vacío, porque solo se usan los query params
+      { withCredentials: true }
+    );
+  }
+    
+
+
   
 
  
