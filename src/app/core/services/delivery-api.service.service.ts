@@ -184,7 +184,8 @@ export class DeliveryApiService {
     idTipoProducto: number,
     idNuevoEstado: number,
     usuario: string,
-    idRol: number
+    idRol: number,
+    sucursalDestino: number|null, // opcional, si se usa en el futuro
   ): Observable<any[]> {
   
     const params = new HttpParams()
@@ -192,7 +193,12 @@ export class DeliveryApiService {
       .set('idTipoProducto', idTipoProducto.toString())
       .set('idNuevoEstado', idNuevoEstado.toString())
       .set('u', usuario)
-      .set('idRol', idRol.toString());
+      .set('idRol', idRol.toString());   
+
+      if (sucursalDestino !== null && sucursalDestino !== undefined) {
+         params.set('idsucursalDestinoRol', sucursalDestino.toString());
+      }
+    
   
     return this._httpClient.post<any[]>(
       '/api/v1/delivery/app/pie/cambioEstado?' + params.toString(),

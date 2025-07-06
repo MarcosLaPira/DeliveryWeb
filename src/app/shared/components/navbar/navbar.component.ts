@@ -37,8 +37,15 @@ export class NavbarComponent {
 
 
   
-  mostrarMensaje(idEsReenvioORescate: boolean, mensaje: string) {
+  mostrarMensaje(idEsReenvioORescate: boolean,mensajeEsSucess: boolean , mensaje: string) {
     this.mensajeUsuario.set(true);
+    
+    if(mensajeEsSucess) {
+      this.rescateOreenvioSucces.set(true); // Indica que se ha realizado un rescate exitoso
+    }
+    else {
+      this.rescateOreenvioSucces.set(false); // Indica que se ha realizado un rescate exitoso
+    }
 
     //mostrar mensaje para el rescate
     if(idEsReenvioORescate){
@@ -58,17 +65,17 @@ export class NavbarComponent {
   hacerRescate(idPieza: number) {
     console.log('Haciendo reenvío para la pieza con ID:', idPieza);
 
-    this.rescateOreenvioSucces.set(true); // Indica que se ha realizado un rescate exitoso
+   
 
     this.deliveryApiService.PostAplicarRescate(idPieza,99).subscribe({//mando por defecto casa central
       next: (resp) => {
         console.log("🚀 ~ NavbarComponent ~ this.deliveryApiService.PostAplicarRescate ~ resp:", resp);
-        this.mostrarMensaje(true, 'Rescate realizado correctamente.'); // Mensaje de éxito
+        this.mostrarMensaje(true,true, 'Rescate realizado correctamente.'); // Mensaje de éxito
         
       },
       error: (error) => {
         console.log("🚀 ~ NavbarComponent ~ this.deliveryApiService.PostAplicarRescate ~ error:", error)
-        this.mostrarMensaje(true, 'Error al realizar el rescate' + error); // Mensaje de error
+        this.mostrarMensaje(true,false, 'Error al realizar el rescate' + error); // Mensaje de error
        
       },
       complete: () => {
@@ -86,7 +93,7 @@ export class NavbarComponent {
     this.rescateOreenvioSucces.set(true); // Indica que se ha realizado un rescate exitoso
 
     //para reenvio mando false
-    this.mostrarMensaje(false, 'Reenvío realizado correctamente.'); // Mensaje de éxito
+    this.mostrarMensaje(false,true, 'Reenvío realizado correctamente.'); // Mensaje de éxito
 
   }
 

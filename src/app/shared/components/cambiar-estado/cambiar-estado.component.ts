@@ -8,6 +8,7 @@ import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroCons
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 import { Estado } from '../../../core/interfaces/modelos/Estado';
 import { lastValueFrom } from 'rxjs';
+import { Sucursal } from '../../../core/interfaces/modelos/Sucursal';
 @Component({
   selector: 'app-cambiar-estado',
   templateUrl: './cambiar-estado.component.html',
@@ -40,6 +41,8 @@ export class CambiarEstadoComponent {
   fallidas = signal(0);
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
+  sucursalesSignal = signal<Sucursal[]>([]);
+  sucursalSeleccionadaSignal = signal<number | null>(null); // sucursal seleccionado
 
 
   @ViewChild('filtrosComponent') filtrosComponent!: AdvancedFiltersComponent;
@@ -65,6 +68,14 @@ export class CambiarEstadoComponent {
       this.estadosSignal.set(resp);
        console.log("estados cargados:", this.estadosSignal());
     });
+
+    this.deliveryApiService.getCatalogoSucursales().subscribe(resp => {
+      this.sucursalesSignal.set(resp);
+       console.log("sucursales cargados:", this.sucursalesSignal());
+    });
+
+
+
  
   }
 
@@ -197,6 +208,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     const idNuevoEstado = this.estadoSeleccionadoSignal();
     const usuario = 'A05212';
     const idRol = 2;
+    const sucursalDestino = this.sucursalSeleccionadaSignal();
   
     if (!piezasSeleccionadas || piezasSeleccionadas.length === 0) {
       alert('No hay piezas seleccionadas para cambiar de estado');
@@ -205,6 +217,11 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
   
     if (!idNuevoEstado) {
       alert('Debe seleccionar un estado válido');
+      return;
+    }
+
+    if(this.estadoSeleccionadoSignal() === 9 && !sucursalDestino) {
+      alert('Debe seleccionar una sucursal válida para realizar una remision');
       return;
     }
   
@@ -221,7 +238,8 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
         17,
         idNuevoEstado,
         usuario,
-        idRol
+        idRol,
+        sucursalDestino
       ).toPromise()
         .then((resp: any) => {
           if (!resp || resp.length === 0) {
@@ -289,6 +307,14 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     if (target) {
       const id = parseInt(target.value, 10);
       this.estadoSeleccionadoSignal.set(isNaN(id) ? null : id);
+    }
+  }
+
+  onSucursalSeleccionada(event: Event) {
+    const target = event.target as HTMLSelectElement | null;
+    if (target) {
+      const id = parseInt(target.value, 10);
+      this.sucursalSeleccionadaSignal.set(isNaN(id) ? null : id);
     }
   }
 
