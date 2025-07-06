@@ -79,7 +79,7 @@ export class PantallaPrincipalComponent  implements OnInit {
   //  this.piezasEntregasDelDia.set(entregasDelDia);
   
     // Filtra y cuenta las piezas con pedido de rescate 4
-    const estadosRescate = ['1','2','3','4','5','6','7'];
+    const estadosRescate = ['1','2','3','4','5','6'];
     this.pedidoDeRescate.set(piezas.filter(pieza => estadosRescate.includes(pieza.IDEstadoRescate)).length);
     //this.piezasPedidoDeRescate.set(pedidoDeRescate);
   

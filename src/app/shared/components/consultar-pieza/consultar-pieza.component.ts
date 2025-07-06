@@ -101,6 +101,7 @@ export class ConsultarPiezaComponent {
       });
       */
 
+      document.body.style.cursor = 'default';
       return;
     }
 
@@ -166,7 +167,7 @@ export class ConsultarPiezaComponent {
     this.deliveryApiService.GetPieza('fechaDesde=2025-05-01&fechaHasta=2025-07-7').subscribe({
       next: (piezasRecibidas) => {
 
-        const estadosRescate = ['1','2','3','4','5','6','7'];
+        const estadosRescate = ['1','2','3','4','5','6'];
         this.piezas.set(piezasRecibidas.filter(pieza => estadosRescate.includes(pieza.IDEstadoRescate)));
 
         this.cargando.set(false);
@@ -191,6 +192,8 @@ export class ConsultarPiezaComponent {
     } else {
       // cargar normalmente desde la API
     }
+
+    document.body.style.cursor = 'default';
       
   }
     

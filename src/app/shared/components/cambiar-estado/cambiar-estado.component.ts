@@ -32,7 +32,7 @@ export class CambiarEstadoComponent {
   piezasSeleccionadasSignal = signal<Pieza[]>([]); // Inicializa la señal de piezas como un array vacío
   cargando = signal<boolean>(false); // Signal para controlar el estado de carga
   
-  //estadosSignal = signal<Estado[]>([]);
+  
 
   sucursalesSignal = computed(() => this.catalogo.sucursales() ?? []);
   estadosSignal = computed(() => this.catalogo.estados() ?? []);
@@ -45,7 +45,7 @@ export class CambiarEstadoComponent {
   fallidas = signal(0);
   // Modal de cambio de estado
   piezaSeleccionada = signal<Pieza | null>(null);
-  //sucursalesSignal = signal<Sucursal[]>([]);
+  
   sucursalSeleccionadaSignal = signal<number | null>(null); // sucursal seleccionado
 
 
@@ -69,18 +69,7 @@ export class CambiarEstadoComponent {
 
   ngOnInit() {
   
-    /*
-    this.deliveryApiService.getCatalogoEstados().subscribe(resp => {
-      this.estadosSignal.set(resp);
-       console.log("estados cargados:", this.estadosSignal());
-    });
-
-    this.deliveryApiService.getCatalogoSucursales().subscribe(resp => {
-      this.sucursalesSignal.set(resp);
-       console.log("sucursales cargados:", this.sucursalesSignal());
-    });
-
-    */
+   
     this.catalogo.cargarEstados();
     this.catalogo.cargarSucursales();
 

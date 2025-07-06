@@ -14,5 +14,5 @@ export const appRoutes: Routes = [
   { path: 'reportes-facturacion', component: ReportesFacturacionComponent },
   { path: 'permisionaria', component: PermisionariaComponent },
   { path: 'mapa', component: MapasComponent },
-  { path: '', redirectTo: '/consultar-pieza', pathMatch: 'full' }, // Redirige por defecto a consultar-pieza
+  { path: '', redirectTo: '/pantalla-principal', pathMatch: 'full' }, // Redirige por defecto a pantalla-principal
 ];
