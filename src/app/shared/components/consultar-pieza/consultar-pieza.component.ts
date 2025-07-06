@@ -64,10 +64,49 @@ export class ConsultarPiezaComponent {
   
   ngOnInit() {
      
+    debugger;
     document.body.style.cursor = 'progress';
     const url = window.location.search;
     const params = new URLSearchParams(url);
-    if (params.get('id') === '1') {
+
+
+    
+    const idPieza = this.route.snapshot.paramMap.get('idPieza'); // esto toma /consultar-pieza/123
+
+    if (idPieza) {
+      // Buscar pieza individual (modo ficha)
+      const pieza = this.piezasSeleccionadasService.getUltimaPieza();
+      console.log("🚀 ~ ConsultarPiezaComponent ~ ngOnInit ~ pieza:", pieza)
+      if (pieza != null /*&& pieza.IDPieza === Number(idPieza)*/) {
+        console.log("🚀 ~ ConsultarPiezaComponent ~ ngOnInit ~ pieza2:", pieza)
+
+        this.piezas.set([pieza]);
+        
+        console.log("🚀 ~ ConsultarPiezaComponent ~ ngOnInit ~ piezas:", )
+        document.body.style.cursor = 'default';
+        return;
+
+      }
+
+      /*
+      // Si no estaba en memoria, pedila al back
+      this.deliveryApiService.GetPieza(idPieza).subscribe({
+        next: (pieza) => {
+          this.piezas.set([pieza]);
+          document.body.style.cursor = 'default';
+        },
+        error: () => {
+          document.body.style.cursor = 'default';
+        }
+      });
+      */
+
+      return;
+    }
+
+
+    // Verifica si hay un ID en los parámetros de la URL desde el dashboard
+    if (params.get('id') === '1') {//piezas en transito
    
       this.cargando.set(true);
       this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21').subscribe({
@@ -133,27 +172,7 @@ export class ConsultarPiezaComponent {
       
   }
     
-  /*
-  ngOnInit() {
-    debugger;
-    document.body.style.cursor = 'progress';
-    this.cargando.set(true);
 
-    this.route.queryParams.subscribe(params => {
-
-      const piezasKey = params['piezasKey'];
-
-      if (piezasKey) {
-        const piezasData = sessionStorage.getItem(piezasKey);
-        this.piezas = piezasData ? JSON.parse(piezasData) : [];
-        console.log('Piezas cargadas:', this.piezas);
-      }
-
-      document.body.style.cursor = 'default';
-      this.cargando.set(false);
-    });
-  }
-    */
 
   //se ejecuta después de que la vista del componente se ha inicializado
 

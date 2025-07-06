@@ -9,6 +9,7 @@ import { MapasComponent } from './shared/components/mapas/mapas.component';
 export const appRoutes: Routes = [
   { path: 'pantalla-principal', component: PantallaPrincipalComponent },
   { path: 'consultar-pieza', component: ConsultarPiezaComponent },
+  { path: 'consultar-pieza/:idPieza', component: ConsultarPiezaComponent }, // Para pieza puntual
   { path: 'cambiar-estado', component: CambiarEstadoComponent },
   { path: 'reportes-facturacion', component: ReportesFacturacionComponent },
   { path: 'permisionaria', component: PermisionariaComponent },

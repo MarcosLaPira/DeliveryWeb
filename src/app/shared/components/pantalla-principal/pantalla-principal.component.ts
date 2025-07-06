@@ -1,4 +1,4 @@
-import { Component, inject, Signal, signal } from '@angular/core';
+import { Component, inject, OnInit, Renderer2, Signal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DeliveryApiService } from '../../../core/services/delivery-api.service.service';
 import { FiltroconsultaPieza } from '../../../core/interfaces/modelos/FiltroConsultaPieza';
@@ -8,7 +8,7 @@ import { Pieza } from '../../../core/interfaces/modelos/Pieza';
   selector: 'app-pantalla-principal',
   templateUrl: './pantalla-principal.component.html',
 })
-export class PantallaPrincipalComponent {
+export class PantallaPrincipalComponent  implements OnInit {
 
   
   private router = inject(Router);
@@ -19,35 +19,39 @@ export class PantallaPrincipalComponent {
   piezasPedidoDeRescate = signal<number>(0);
   piezasEntregasDelDia = signal<number>(0);
   piezasEnGuarda = signal<number>(0);
-
+  
+  cursor = signal<string>('default'); 
 
   constructor(
    
+    private renderer: Renderer2,
     private deliveryApiService: DeliveryApiService,
-  
+    
   ) {}
 
-   ngOnInit(){
+  ngOnInit() {
     console.log("ngOnInit ejecutado en pantalla principal");
-
+  
     this.cargando.set(true); // Activa el estado de carga
-    document.body.style.cursor = 'progress'; // Restaura el cursor
-
-    this.deliveryApiService.GetPieza('fechaDesde=2024-01-01&fechaHasta=2024-12-31').subscribe({
+   // this.cursor.set('progress'); // Cambia el cursor a "progress"
+    document.body.style.cursor = 'progress';
+    const filtro = 'fechaDesde=2024-01-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21'
+  
+    const filtro2 = 'fechaDesde=2024-01-01&fechaHasta=2024-12-30'
+    this.deliveryApiService.GetPieza(filtro2).subscribe({
       next: (piezas) => {
+        console.log("Piezas recibidas:", piezas); // Verifica que las piezas se reciban correctamente
         this.piezas.set(piezas);
         this.cargando.set(false);
-        this.piezas.set(piezas);  
-        this.calcularMetricas(piezas);    
-        document.body.style.cursor = 'default'; // Restaura el cursor
-
+        this.calcularMetricas(piezas);
+       // this.cursor.set('default'); // Restaura el cursor
+        document.body.style.cursor = 'default';
       },
-      error: () => {
+      error: (error) => {
         this.cargando.set(false);
-        document.body.style.cursor = 'default'; // Restaura el cursor
+        document.body.style.cursor = 'default';
+        console.log("error", error);
       },
-      
-
     });
   }
 
@@ -76,7 +80,7 @@ export class PantallaPrincipalComponent {
   
     // Filtra y cuenta las piezas con pedido de rescate 4
     const estadosRescate = ['1','2','3','4','5','6','7'];
-    this.pedidoDeRescate.set(piezas.filter(pieza => estadosRescate.includes(pieza.IDEstado)).length);
+    this.pedidoDeRescate.set(piezas.filter(pieza => estadosRescate.includes(pieza.IDEstadoRescate)).length);
     //this.piezasPedidoDeRescate.set(pedidoDeRescate);
   
    

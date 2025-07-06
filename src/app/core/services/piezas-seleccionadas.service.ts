@@ -6,6 +6,17 @@ import { Pieza } from '../interfaces/modelos/Pieza';
 export class PiezasSeleccionadasService {
     
   private readonly piezasSeleccionadasSignal = signal<Pieza[]>([]);
+  private ultimaPiezaDesdeDashboard = signal<Pieza | null>(null);
+
+  setUltimaPieza(pieza: Pieza) {
+    this.ultimaPiezaDesdeDashboard.set(pieza);
+  }
+
+  getUltimaPieza(): Pieza | null {
+    return this.ultimaPiezaDesdeDashboard();
+  }
+
+  
   private piezasMapas: Pieza[] = [];
 
    private piezasCargadas: Pieza[] = [];

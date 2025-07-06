@@ -4,6 +4,82 @@
       <img src="//www.hipotecario.com.ar/wp-content/uploads/2019/07/logo-hipotecario.svg" alt="Logo hipotecario" class=" w-25">
     </a>
    
+    @if (esPantallaPrincipal()) {
+      <div class="relative">
+        <div class="flex items-center gap-2 justify-between bg-surface w-60 h-11 px-4 border border-gray-300 rounded-lg shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-primary">
+          <img
+          src="/search.png"
+          alt="Buscar"
+          class="h-6 w-6 object-contain group-hover:scale-200 transition"
+          (click)="buscarPorDni()"
+          />
+
+          <input
+            type="text"
+            placeholder="DNI.."
+            [(ngModel)]="dni"
+            class="w-full h-full bg-transparent focus:outline-none"
+            (keydown.enter)="buscarPorDni()"
+          />
+         
+          <img
+          src="/right-arrow.png"
+          alt="Abrir/Cerrar"
+          class="h-6 w-6 object-contain cursor-pointer transition-transform"
+          [class.rotate-90]="dropdownAbierto()"
+          (click)="toggleDropdown()"
+        />
+          
+        </div>
+          
+        <!-- Dropdown de resultados -->
+        @if (dropdownAbierto() && piezas() !== null) {
+          <div 
+            class="absolute z-50 bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-96 max-h-150 overflow-y-auto"   
+            
+          >
+            <ul>
+              @for (pieza of piezas(); track pieza.IDPieza) {
+
+              <li
+              class="p-4 m-2 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all duration-200 cursor-pointer bg-white      hover:bg-gradient-to-br from-primary to-blue-100 hover:scale-110 transition"
+              (click)="seleccionarPieza(pieza)"
+
+              >
+                <div class="flex justify-between items-center mb-1">
+
+                  <h3 class="font-semibold text-gray-800 text-base">{{ pieza.NombreTitular }}</h3>
+                 
+                  <span
+                    class="text-xs px-2 py-1 rounded-full font-medium"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': pieza.Estado === 'Entregada',
+                      'bg-yellow-100 text-yellow-800': pieza.Estado === 'En tránsito',
+                      'bg-red-100 text-red-800': pieza.Estado === 'Rechazada'
+                    }"
+                  >
+                    {{ pieza.Estado }}
+                  </span>
+                </div>
+              
+                <div class="text-sm text-gray-600">
+                  <p><strong>Producto:</strong> {{ pieza.TipoProducto }}</p>
+                  <p><strong>Fecha:</strong> {{ pieza.Fecha }}</p>
+                  <p><strong>ID:</strong> {{ pieza.IDPieza }}</p>
+                </div>
+
+               
+
+
+              </li>
+              
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+    
     <div class="space-x-4">
       <a routerLink="/pantalla-principal" routerLinkActive=" font-bold border-b-2 border-secondary" class=" text-surface  hover:text-blue-200">Pantalla Principal</a>
       <a routerLink="/consultar-pieza"  routerLinkActive="text-secondary font-bold border-b-2 border-secondary" class="text-surface hover:text-blue-200">Consultar Pieza</a>

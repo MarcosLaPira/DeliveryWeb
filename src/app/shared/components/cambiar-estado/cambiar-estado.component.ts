@@ -169,7 +169,7 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
   
 
 
-   piezasPaginadas = computed(() => {
+  piezasPaginadas = computed(() => {
     const todas = this.piezasSeleccionadasSignal();
     const pageSize = this.filasPorPaginaSignal();
     const page = this.currentPageSignal();

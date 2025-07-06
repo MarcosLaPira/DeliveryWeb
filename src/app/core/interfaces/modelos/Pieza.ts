@@ -30,7 +30,7 @@ export interface Pieza {
     Canal                 :string;
     SubCanal              :string;
     Gestion               :string;
-    EstadoRescate         :string;
+    IDEstadoRescate       :string;
     Sucursal              :string;
     Locacion              :string;
     MarcaEstadoFinalPerm  :string;

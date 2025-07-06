@@ -49,8 +49,9 @@ export class DeliveryApiService {
 
   
   GetPieza(filtro: string): Observable<Pieza[]> {
+    console.log('Llamando a la API de piezas sin filtro');
    
-    console.log('Llamando a la API de piezas con filtro');
+   
     console.log('Filtro:', filtro);
   
      return this._httpClient.get<Pieza[]>('http://localhost:52441/api/v1/delivery/app/piezas/buscar?' + filtro, { withCredentials: true} )
