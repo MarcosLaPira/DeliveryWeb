@@ -37,7 +37,7 @@ export class PantallaPrincipalComponent  implements OnInit {
     document.body.style.cursor = 'progress';
     const filtro = 'fechaDesde=2024-09-01&fechaHasta=2024-12-31&estados=160, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 99, 100, 101, 69, 27, 106, 203, 31, 23, 4, 5, 6, 21'
   
-    const filtro2 = 'fechaDesde=2025-05-01&fechaHasta=2025-07-7'
+    const filtro2 = 'fechaDesde=2025-05-01&fechaHasta=2025-07-8'
     this.deliveryApiService.GetPieza(filtro2).subscribe({
       next: (piezas) => {
        

@@ -20,6 +20,7 @@ export class CambiarEstadoComponent {
 
 
 
+
   // Datos de ejemplo (puedes reemplazar por fetch real)
   
  
@@ -39,7 +40,7 @@ export class CambiarEstadoComponent {
   
   estadoSeleccionadoSignal = signal<number | null>(null); // Estado seleccionado
   erroresCambioEstadoSignal = signal<{ idPieza: number, detalle: string }[]>([]);
-  mostrarResumenOpen= signal<boolean>(false); // Signal para controlar el estado de carga
+  mostrarResumenOpen= signal<boolean>(true); // Signal para controlar el estado de carga
   //ocultarResumen = false; // Controla si el resumen debe difuminarse
   exitosas =  signal(0);
   fallidas = signal(0);
@@ -317,18 +318,11 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
 
   // Método para mostrar el resumen
   private mostrarResumen() {
-   
-    
     this.mostrarResumenOpen.set(true);
-   // this.ocultarResumen = false;
-
-    // Inicia el temporizador para difuminar el resumen
+  
     setTimeout(() => {
-      this.mostrarResumenOpen.set(false);
-     // this.ocultarResumen = true;
-      this.fallidas.set(0);
-      this.exitosas.set(0);
-    }, 8000); // 10 segundos
+      this.cerrarResumen();
+    }, 8000);
   }
 
   cerrarResumen() {
@@ -336,6 +330,10 @@ quitarFiltro(clave: keyof FiltroconsultaPieza) {
     this.mostrarResumenOpen.set(false);
     this.fallidas.set(0);
     this.exitosas.set(0);
+  }
+
+  verErroresDeCambiosDeEstados() {
+   
   }
   
 }

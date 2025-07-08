@@ -16,12 +16,9 @@
   <!--Pantalla principal-->
   <div class="flex-1 h-full w-full  flex-col  transition-all duration-300 ease-in-out bg-background  ">
 
-    @if(mostrarResumenOpen()){
-
+    @if (mostrarResumenOpen()) {
       <div
-        class="absolute top-20 right-2 z-[100] bg-white shadow-lg p-4 rounded align-center flex flex-col justify-center text-center transition-opacity duration-[10s]"
-        [class.opacity-0]="!mostrarResumenOpen()"
-        (transitionend)="cerrarResumen()"
+        class="absolute top-20 right-2 z-[100] bg-white shadow-lg p-4 rounded align-center flex flex-col justify-center text-center transition-opacity duration-500 opacity-100"
       >
         <button
           class="absolute top-1 right-2 text-md text-gray-500 hover:text-red-700 font-bold"
@@ -29,13 +26,16 @@
         >
           X
         </button>
-
+    
         <p class="mb-2 text-green-600"><strong>Piezas exitosas:</strong> {{ exitosas() }}</p>
         <p class="mb-4 text-red-600"><strong>Piezas con error:</strong> {{ fallidas() }}</p>
-       
-       
-        @if(fallidas() > 0){
-          <button class="bg-red-200 text-surface p-2 rounded-4xl transition-all duration-200 hover:scale-105 hover:bg-red-600">
+    
+        @if(fallidas() === 0) {
+          <button 
+            class="bg-red-200 text-surface p-2 rounded-4xl transition-all duration-200 hover:scale-105 hover:bg-red-600"
+            (click)="verErroresDeCambiosDeEstados()"
+          >
+            
             Ver
           </button>
         }
